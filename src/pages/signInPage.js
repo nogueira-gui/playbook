@@ -1,43 +1,54 @@
 import React, {useState, useContext} from 'react';
-import {View, StyleSheet, Image, Text, ActivityIndicator, Platform, StatusBar} from 'react-native';
+import {View, StyleSheet, Image, Text, ActivityIndicator, Platform, StatusBar, Alert} from 'react-native';
 import {Input, Icon, Button, CheckBox, Overlay} from 'react-native-elements';
-import { NavigationEvents } from 'react-navigation';
-
+// import { NavigationEvents } from 'react-navigation';
 import Spacer from '../components/spacer';
-import {Context as AuthContext} from '../context/AuthContext';
-import {Context as ProfileContext} from '../context/ProfileContext';
+import Spacer2 from '../components/spacer2';
+import firebase from '../config/firebase';
+import 'firebase/auth';
 
-const SignInPage = () => {
-   const [userName, setUserName] = useState('');
-   const [userPassword, setuserPassword] = useState('');
+const SignInPage = ({ navigation }) => {
+   // const { signIn } = useContext(authContext);
+
+   const [email, setEmail] = useState('');
+   const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
    const [showPopup, setShowPopup] = useState(false);
-   const { state, signin, clearErrorMessage } = useContext(AuthContext);
-   const contextProfile = useContext(ProfileContext);
-   const getProfile = contextProfile ? contextProfile["get"] : null;
+   const [msg, setMsg] = useState();
 
-   return (
+   function logar(){
+      firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
+         setMsg("sucesso")
+         signIn()
+         console.log(email);
+         // dispatch({ type: 'SIGN_IN', userEmail:email });
+      }).catch(err => {
+         console.log(err);
+         setMsg("erro")
+      })
+   }
+   // console.log(useSelector(state => state.usuario_email));
+
+return (
       <View style={styles.container}>
          <StatusBar barStyle="dark-content" backgroundColor="white"/>
-         <Image source={require('../../assets/texprima.png')} style={styles.image} /> 
+         <Image source={require('../../assets/favicon.png')} style={styles.image} />
          <Spacer />
-         <NavigationEvents 
-            onWillBlur={clearErrorMessage} 
-         />
+         {/* <NavigationEvents   onWillBlur={clearErrorMessage} /> */}
          <Input
-            placeholder='Usuário'
-            autoCompleteType="username"
+            placeholder='Email'
+            autoCompleteType="email"
             autoCapitalize="none"
             autoCorrect={false}
             clearButtonMode="always"
             leftIcon={
                <Icon
-                  name='account-circle'
+                  name='email'
                   size={24}
                   color='black'
                /> }
-            value={userName}
-            onChangeText={(newUser) => setUserName(newUser)}
+            value={email}
+            onChangeText={(newEmail) => setEmail(newEmail)}
          />
          <Input
             placeholder='Senha'
@@ -52,47 +63,46 @@ const SignInPage = () => {
                   size={24}
                   color='black'
                />
-            
+
             }
-            value={userPassword}
-            onChangeText={(newPass) => setuserPassword(newPass)}
+            value={password}
+            onChangeText={(newPass) => setPassword(newPass)}
          />
          <CheckBox
             iconType="Feather"
             checkedIcon={<Icon name="check-box" color="black"/>}
-            uncheckedIcon={<Icon name="check-box-outline-blank" color="black"/>}
+            uncheckedIcon={<Icon name="check-box-outline-blank" colsor="black"/>}
             title='Mostrar Senha'
             checked={showPassword}
             onPress={() => setShowPassword(!showPassword)}
          />
-         {
-            state.isLoading ? (
-               <ActivityIndicator size="large" color="gray" />
-            ) : null
-         }
-         {
-            state.errorMessage ? (
-               <Text style={styles.errorMessage}>{state.errorMessage}</Text>
-            ) : null
-         }
          <Spacer />
-         <Button 
+         <Button
             style={styles.button}
             title="Entrar"
-            disabled={state.isLoading}
-            onPress={() => signin({userName, passWord: userPassword, getProfile})}
+            // disabled={state.isLoading}
+            // onPress={() => signin({userName, passWord: password, getProfile})}
+            onPress={() => logar()}
          />
+         {msg === "erro" && <Text>Email ou Senha errado!</Text>}
          { Platform.OS !== "ios" ?
-            <Spacer/>
+            <Spacer2/>
             : null
          }
-         <Button 
+         <Button
+            style={styles.button}
+            title="Cadastrar uma conta"
+            onPress={() => navigation.push("SignUp")}
+            // disabled={state.isLoading}
+         />
+         <Spacer2/>
+         <Button
             style={styles.button}
             title="Esqueci minha senha"
             onPress={() => setShowPopup(true)}
-            disabled={state.isLoading}
+            // disabled={state.isLoading}
          />
-         <Overlay 
+         <Overlay
             isVisible={showPopup}
             width="auto"
             height="auto"
@@ -100,12 +110,12 @@ const SignInPage = () => {
             <>
                <Text>As instruções para redefinição de senha do usuário %user% foi enviado para %email%!</Text>
                <Spacer/>
-               <Button 
+               <Button
                   style={styles.button}
                   title="Fechar"
                   onPress={() =>setShowPopup(false) }
                />
-            </>            
+            </>
          </Overlay>
       </View>
    )
@@ -114,13 +124,18 @@ const SignInPage = () => {
 const styles = StyleSheet.create({
    container: {
       flex: 1,
-      justifyContent: "center"
+      justifyContent: "center",
+      // backgroundColor: "#265099",
+      // tintColor: "#FFF"
    },
    image: {
       width: 240,
       height: 160,
       borderRadius: 10,
       alignSelf: "center"
+   },
+   input:{
+      tintColor: "#FFF"
    },
    button: {
       marginBottom: 10,
@@ -131,7 +146,7 @@ const styles = StyleSheet.create({
       color: 'red',
       marginLeft: 15,
       marginTop: 15
-    }  
+    }
 });
 
 export default SignInPage;

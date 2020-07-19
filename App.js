@@ -1,86 +1,123 @@
-import React from 'react';
-import {Image,TouchableOpacity} from 'react-native';
-import {Icon} from 'react-native-elements';
+import * as React from 'react';
+import { AsyncStorage } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import Splash from "./src/pages/splash";
+import Home from "./src/pages/home";
+import SignIn from './src/pages/signInPage';
+import SignUp from './src/pages/signUpPage';
 
-//import { NavigationContainer } from '@react-navigation/native';
-import {createAppContainer, createSwitchNavigator} from '@react-navigation/native';
-import {createStackNavigator } from '@react-navigation/stack';
-import {createBottomTabNavigator} from '@react-navigation/tabs';
+const AuthContext = React.createContext();
+const Stack = createStackNavigator();
 
-import {setNavigator, navigate} from './src/navigationRef';
 
-import {Provider as AuthProvider} from './src/context/AuthContext';
+export default function App ({ navigation }) {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [userToken, setUserToken] = React.useState(null);
 
-import SignInPage from './src/pages/signInPage';
-import SignUpPage from './src/pages/signUpPage';
-import gotaPage from './src/pages/gotaPage';
-import devocionalPage from './src/pages/devocionalPage';
-import bibliaPage from './src/pages/bibliaPage';
-import loadAppPage from './src/pages/loadAppPage';
-import blocoPage from './src/pages/blocoPage';
-import ebookPage from './src/pages/ebookPage';
-
-const navigator = createSwitchNavigator({
-    loadApp: loadAppPage,
-    authRoutes: createStackNavigator({
-                signIn: SignInPage,
-                signUp: SignUpPage
-    }, 
+  const [state, dispatch] = React.useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'RESTORE_TOKEN':
+          return {
+            ...prevState,
+            userToken: action.token,
+            userEmail: action.email,
+            isLoading: false,
+          };
+        case 'SIGN_IN':
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token,
+            userEmail: action.email
+          };
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isSignout: true,
+            userToken: null,
+            userEmail: null
+          };
+      }
+    },
     {
-    initialRouteName: "signIn",
-    defaultNavigationOptions: {
-        title: "PlayBOOK"
+      isLoading: true,
+      isSignout: false,
+      userToken: null,
+      userEmail: null
     }
-}),
-    appRoutes: createStackNavigator({
-        main: createBottomTabNavigator({
-          devocional: devocionalPage, 
-          gota: gotaPage,
-          biblia: bibliaPage,
-          blocoNota: blocoPage,
-          ebook: ebookPage
-        },
-        {
-            initialRouteName: "devocional"
-        }),
-        /**Listar aqui as proximas telas */
-    },{
-        defaultNavigationOptions:{
-            title: "Nome Page",
-            headerLeft: () => <TouchableOpacity
-                onPress={() => navigate("drawer")}
-            >
-            <Icon 
-            name = "menu"
-            size = {28}
-            paddingRight={14}
-            color='black'
+  );
+
+  React.useEffect(() => {
+    // Fetch the token from storage then navigate to our appropriate place
+    const bootstrapAsync = async () => {
+      let userToken;
+      let userEmail;
+      try {
+        userEmail = await AsyncStorage.getItem('userEmail');
+        userToken = await AsyncStorage.getItem('userToken');
+      } catch (e) {
+        // Restoring token failed
+        console.log('Erro ao recuperar: ',e)
+      }
+
+      // After restoring token, we may need to validate it in production apps
+
+      // This will switch to the App screen or Auth screen and this loading
+      // screen will be unmounted and thrown away.
+      dispatch({ type: 'RESTORE_TOKEN', email: userEmail, token: userToken });
+    };
+
+    bootstrapAsync();
+  }, []);
+
+  const authContext = React.useMemo(
+    () => ({
+      signIn: async data => {
+        // In a production app, we need to send some data (usually username, password) to server and get a token
+        // We will also need to handle errors if sign in failed
+        // After getting token, we need to persist the token using `AsyncStorage`
+        // In the example, we'll use a dummy token
+        dispatch({ type: 'SIGN_IN', email: userEmail, token: 'dummy-auth-token' });
+      },
+      signOut: () =>  dispatch({ type: 'SIGN_OUT' }),
+      signUp: async data => {
+        // In a production app, we need to send user data to server and get a token
+        // We will also need to handle errors if sign up failed
+        // After getting token, we need to persist the token using `AsyncStorage`
+        // In the example, we'll use a dummy token
+        dispatch({ type: 'SIGN_IN', email: userEmail ,token: 'dummy-auth-token' });
+      },
+    }),
+    []
+  );
+
+  return (
+    <AuthContext.Provider value={authContext}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          {state.isLoading ? (
+            // We haven't finished checking for the token yet
+            <Stack.Screen name="Splash" component={Splash} />
+          ) : state.userToken == null ? (
+            // No token found, user isn't signed in
+            <Stack.Screen
+              name="SignIn"
+              component={SignIn}
+              options={{
+                title: 'Sign in',
+            // When logging out, a pop animation feels intuitive
+                animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+              }}
             />
-            </TouchableOpacity>
-        }
-    })
-},
-{
-    initialRouteName: "loadApp"
-});
-
-const App = createAppContainer(navigator);
-
-export default () => {
-    return (
-        <AuthProvider>
-            <App ref={(navigator) => { setNavigator(navigator)}} />
-        </AuthProvider>
-    );
+          ) : (
+            // User is signed in
+            <Stack.Screen name="Home" component={Home} />
+          )}
+          <Stack.Screen name="SignUp" component={SignUp}/>
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContext.Provider>
+  );
 }
-
-
-
-
-
-
-
-
-
-
-
