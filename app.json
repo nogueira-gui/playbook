@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "ePlayBook",
+    "name": "arsenal da fé",
     "slug": "ePlayBook",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,6 +21,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": "Aplicativo desenvolvido para dar suporte ao cristão.",
+    "githubUrl": "https://github.com/ninjadexter/playbook"
   }
 }

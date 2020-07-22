@@ -4,11 +4,11 @@ import {Input, Icon, Button, CheckBox, Overlay} from 'react-native-elements';
 // import { NavigationEvents } from 'react-navigation';
 import Spacer from '../components/spacer';
 import Spacer2 from '../components/spacer2';
-import firebase from '../config/firebase';
-import 'firebase/auth';
+
+import { AuthContext } from "../store/authContext";
 
 const SignInPage = ({ navigation }) => {
-   // const { signIn } = useContext(authContext);
+   const { state,signIn } = useContext(AuthContext);
 
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
@@ -16,23 +16,11 @@ const SignInPage = ({ navigation }) => {
    const [showPopup, setShowPopup] = useState(false);
    const [msg, setMsg] = useState();
 
-   function logar(){
-      firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
-         setMsg("sucesso")
-         signIn()
-         console.log(email);
-         // dispatch({ type: 'SIGN_IN', userEmail:email });
-      }).catch(err => {
-         console.log(err);
-         setMsg("erro")
-      })
-   }
-   // console.log(useSelector(state => state.usuario_email));
-
 return (
       <View style={styles.container}>
          <StatusBar barStyle="dark-content" backgroundColor="white"/>
-         <Image source={require('../../assets/favicon.png')} style={styles.image} />
+         <Image source={require('../../assets/logo.png')} style={styles.image} />
+         <Text style={styles.texto}>Bem vindo (a) ao ARSENAL DA FÉ!</Text>
          <Spacer />
          {/* <NavigationEvents   onWillBlur={clearErrorMessage} /> */}
          <Input
@@ -71,8 +59,8 @@ return (
          <CheckBox
             iconType="Feather"
             checkedIcon={<Icon name="check-box" color="black"/>}
-            uncheckedIcon={<Icon name="check-box-outline-blank" colsor="black"/>}
-            title='Mostrar Senha'
+            uncheckedIcon={<Icon name="check-box-outline-blank" color="black"/>}
+            title='Exibir Senha'
             checked={showPassword}
             onPress={() => setShowPassword(!showPassword)}
          />
@@ -82,7 +70,7 @@ return (
             title="Entrar"
             // disabled={state.isLoading}
             // onPress={() => signin({userName, passWord: password, getProfile})}
-            onPress={() => logar()}
+            onPress={() => signIn({email, password})}
          />
          {msg === "erro" && <Text>Email ou Senha errado!</Text>}
          { Platform.OS !== "ios" ?
@@ -129,9 +117,9 @@ const styles = StyleSheet.create({
       // tintColor: "#FFF"
    },
    image: {
-      width: 240,
+      width: 160,
       height: 160,
-      borderRadius: 10,
+      borderRadius: 360,
       alignSelf: "center"
    },
    input:{
@@ -145,6 +133,13 @@ const styles = StyleSheet.create({
       fontSize: 16,
       color: 'red',
       marginLeft: 15,
+      marginTop: 15
+    },
+    texto: {
+      fontSize: 16,
+      color: 'blue',
+      marginLeft: 15,
+      alignSelf: "center",
       marginTop: 15
     }
 });
