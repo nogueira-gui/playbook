@@ -7,8 +7,11 @@ import Spacer from '../components/spacer';
 import firebase from '../config/firebase'
 import 'firebase/auth'
 
+import { AuthContext } from "../context/authContext";
 
 const SignUpPage = ({ navigation }) => {
+   const { state,signUp } = useContext(AuthContext);
+
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [password2, setPassword2] = useState('');
@@ -17,7 +20,7 @@ const SignUpPage = ({ navigation }) => {
    const [msg, setMsg] = useState();
    const [loading, setLoading] = useState(false);
 
-   function signUp(){
+   function cadastrar(){
     setLoading(true);
     setMsg(null);
     if(password === password2){ 
@@ -27,9 +30,10 @@ const SignUpPage = ({ navigation }) => {
             return;
         }else { 
       firebase.auth().createUserWithEmailAndPassword(email, password).then(result => {
-         //se processado navega
          setMsg("cadastrado")
          setLoading(false);
+         signUp({email});
+         navigation.navigate("Intro")
       }).catch(err => {
          setLoading(false);
          switch(err.message){ 
@@ -109,21 +113,13 @@ return (
             value={password2}
             onChangeText={(newPass) => setPassword2(newPass)}
          />
-       { /* <CheckBox
-            iconType="Feather"
-            checkedIcon={<Icon name="check-box" color="black"/>}
-            uncheckedIcon={<Icon name="check-box-outline-blank" colsor="black"/>}
-            title='Mostrar Senha'
-            checked={showPassword}
-            onPress={() => setShowPassword(!showPassword)}
-        /> */} 
          <Spacer />
          { loading ? <ActivityIndicator/> : 
          <Button 
             style={styles.button}
             title="Criar"
             // disabled={state.isLoading}
-            onPress={() => signUp()}
+            onPress={() => cadastrar()}
          /> }
          {msg && <Text>{msg}</Text>}
          { Platform.OS !== "ios" ?

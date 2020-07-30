@@ -5,7 +5,7 @@ import {Input, Icon, Button, CheckBox, Overlay} from 'react-native-elements';
 import Spacer from '../components/spacer';
 import Spacer2 from '../components/spacer2';
 
-import { AuthContext } from "../store/authContext";
+import { AuthContext } from "../context/authContext";
 
 const SignInPage = ({ navigation }) => {
    const { state,signIn } = useContext(AuthContext);
@@ -19,7 +19,7 @@ const SignInPage = ({ navigation }) => {
 return (
       <View style={styles.container}>
          <StatusBar barStyle="dark-content" backgroundColor="white"/>
-         <Image source={require('../../assets/logo.png')} style={styles.image} />
+         <Image source={require('../../assets/logoSign.png')} style={styles.image} />
          <Text style={styles.texto}>Bem vindo (a) ao ARSENAL DA FÉ!</Text>
          <Spacer />
          {/* <NavigationEvents   onWillBlur={clearErrorMessage} /> */}

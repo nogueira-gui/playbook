@@ -2,22 +2,36 @@ import * as React from 'react';
 import { AsyncStorage } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Splash from "./src/pages/splash";
 import Home from "./src/pages/home";
+import Gota from "./src/pages/gotaPage"
+import Devocional from "./src/pages/devocionalPage";
+import Intro from "./src/pages/introPage";
 import SignIn from './src/pages/signInPage';
 import SignUp from './src/pages/signUpPage';
 
+
 import firebase from './src/config/firebase';
 import 'firebase/auth';
-import { AuthContext } from "./src/store/authContext";
+import { AuthContext } from "./src/context/authContext";
+import { set } from 'react-native-reanimated';
 
-const Stack = createStackNavigator();
+const SplashStack = createStackNavigator();
+const AuthStack = createStackNavigator();
+const Tabs = createBottomTabNavigator();
+
+const HomeStack = createStackNavigator();
+const IntroStack = createStackNavigator();
+
 
 
 export default function App ({ navigation }) {
   const [isLoading, setIsLoading] = React.useState(true);
 //   const [userToken, setUserToken] = React.useState(null);
   const [userEmail, setEmail] = React.useState(null);
+  const [msg, setMsg] = React.useState();
+  const [goIntro, setGoIntro] = React.useState(false);
 
   const [state, dispatch] = React.useReducer(
     (prevState, action) => {
@@ -36,6 +50,14 @@ export default function App ({ navigation }) {
             // userToken: action.token,
             userEmail: action.email
           };
+        case 'SIGN_UP':
+            return {
+              ...prevState,
+              isSignout: false,
+              // userToken: action.token,
+              userEmail: action.email,
+              goIntro: true
+            };
         case 'SIGN_OUT':
           return {
             ...prevState,
@@ -80,58 +102,66 @@ export default function App ({ navigation }) {
     () => ({
       signIn: async ({email,password}) => {
         firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
-            // console.log("Weeee Funcional o Context  ",email)
             setEmail(email);
             dispatch({ type: 'SIGN_IN', email: email/*, token: 'dummy-auth-token'*/ });
          }).catch(err => {
             console.log(err);
          })
-        // In a production app, we need to send some data (usually username, password) to server and get a token
-        // We will also need to handle errors if sign in failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        // dispatch({ type: 'SIGN_IN', email: userEmail/*, token: 'dummy-auth-token'*/ });
       },
-      signOut: () =>  dispatch({ type: 'SIGN_OUT' }),
+      signOut: () => {
+        dispatch({ type: 'SIGN_OUT' })
+      } ,
       signUp: async ({email}) => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
-        //A partir do metodo SIGN UP devemos iniciar a tela de apresentação do aplicativo
-
-        dispatch({ type: 'SIGN_IN', email: email /* ,token: 'dummy-auth-token' */});
+          setEmail(email);
+          dispatch({ type: 'SIGN_UP', email: email /* ,token: 'dummy-auth-token' */});
       },
     }),
     []
   );
-
+  const AuthStackScreens = () => {
+    return(
+    <AuthStack.Navigator initialRouteName="SignIn">
+      <AuthStack.Screen name="SignIn" component={SignIn} options={{
+          title: 'Acesso',
+          // Quando o usuario faz o loggout uma animação intuitiva ocorre
+          animationTypeForReplace: state.isSignout ? 'pop' : 'push',
+      }} />
+      <AuthStack.Screen name="SignUp" component={SignUp} options={{title: 'Cadastro' }}/>
+      <AuthStack.Screen name="Intro" component={Intro} options={{title: 'Tutorial'}} />
+    </AuthStack.Navigator>
+    )
+  }
+  const TabScreens = () => {
+    return(
+    <Tabs.Navigator>
+      <Tabs.Screen name="Home" component={Home} options={{ title: "Principal"}}/>
+      <Tabs.Screen name="Gota" component={Gota} options={{ title: "Gota"}}/>
+      <Tabs.Screen name="Devocional" component={Devocional} options={{ title: "Devocional"}}/>
+    </Tabs.Navigator> 
+    )
+  }
+  const HomeStackScreens = () => {
+    return (
+    <HomeStack.Navigator>
+            <HomeStack.Screen name="Home" component={TabScreens} options={{ title: "Arsenal da Fé" , headerTitleAlign: "center" , headerLeft: null}}/> 
+            <HomeStack.Screen name="Gota" component={Gota} options={{ title: "Gota", headerTitleAlign: "center"}} />   
+    </HomeStack.Navigator>
+    )
+  }
   return (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
-        <Stack.Navigator>
-          {state.isLoading ? (
-            // We haven't finished checking for the token yet
-            <Stack.Screen name="Splash" component={Splash} />
-          ) : state.userEmail == null ? (
-            // No token found, user isn't signed in
-            <Stack.Screen
-              name="SignIn"
-              component={SignIn}
-              options={{
-                title: 'Sign in',
-            // When logging out, a pop animation feels intuitive
-                animationTypeForReplace: state.isSignout ? 'pop' : 'push',
-              }}
-            />
-          ) : (
-            // User is signed in
-            <Stack.Screen name="Home" component={Home} />
-          )}
-          <Stack.Screen name="SignUp" component={SignUp}/>
-        </Stack.Navigator>
+          {
+            state.isLoading ? (
+              <SplashStack.Navigator>
+                <SplashStack.Screen name="Splash" component={Splash} />
+              </SplashStack.Navigator>
+            ) : state.userEmail == null ? (
+              <AuthStackScreens/>
+            ) : (
+            <HomeStackScreens/>
+            )
+        }
       </NavigationContainer>
     </AuthContext.Provider>
   );
