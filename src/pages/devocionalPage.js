@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
        tintColor: "#FFF"
     },
     scrollView: {
-      backgroundColor: '#AAA',
+      backgroundColor: 'steelblue',
       marginHorizontal: 10,
     },
      texto: {

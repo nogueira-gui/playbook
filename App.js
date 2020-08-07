@@ -3,6 +3,7 @@ import { AsyncStorage } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons,FontAwesome5,Entypo } from '@expo/vector-icons';
 import Splash from "./src/pages/splash";
 import Home from "./src/pages/home";
 import Gota from "./src/pages/gotaPage"
@@ -133,9 +134,30 @@ export default function App ({ navigation }) {
   }
   const TabScreens = () => {
     return(
-    <Tabs.Navigator>
-      <Tabs.Screen name="Home" component={Home} options={{ title: "Principal"}}/>
-      <Tabs.Screen name="Gota" component={Gota} options={{ title: "Gota"}}/>
+    <Tabs.Navigator screenOptions={({ route }) => ({
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+
+        if (route.name === 'Home') {
+          iconName = focused
+            ? 'book-open'
+            : 'bible';
+        } else if (route.name === 'Gota') {
+          iconName = focused ? 'home' : 'home';
+        } else if (route.name === 'Devocional') {
+          iconName = focused ? 'dove' : 'dove';
+        }
+
+        // You can return any component that you like here!
+        return <FontAwesome5 name={iconName} size={size} color={color} />;
+      },
+    })}
+    tabBarOptions={{
+      activeTintColor: 'steelblue',
+      inactiveTintColor: 'gray',
+    }}>
+      <Tabs.Screen name="Home" component={Home} options={{ title: "Bíblia"}}/>
+      <Tabs.Screen name="Gota" component={Gota} options={{ title: "Principal"}}/>
       <Tabs.Screen name="Devocional" component={Devocional} options={{ title: "Devocional"}}/>
     </Tabs.Navigator> 
     )
