@@ -1,10 +1,19 @@
-import React from 'react';
+import React, {useState,UseEffect, useEffect} from 'react';
 import {Text,View,StyleSheet} from 'react-native';
+import firebase from "../config/firebase"
 
-export default function Gota(){
+
+
+
+export default function Home(){
+  
+  const [dados,setDados] = useState();
+  const usuarioRef = firebase.database().ref("gota/")
+  console.log(usuarioRef.child('01').child('1').child(1))
+
     return (
     <View style={styles.container}>
-        <Text style={styles.texto}> "Nunca dê a um crítico mais tempo do que você daria a um amigo."</Text>
+        <Text style={styles.texto}> {dados}</Text>
     </View>    
     )
 }

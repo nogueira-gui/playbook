@@ -5,8 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons,FontAwesome5,Entypo } from '@expo/vector-icons';
 import Splash from "./src/pages/splash";
-import Home from "./src/pages/home";
-import Gota from "./src/pages/gotaPage"
+import Biblia from "./src/pages/bibliaPage";
+import Principal from "./src/pages/homePage"
 import Devocional from "./src/pages/devocionalPage";
 import Intro from "./src/pages/introPage";
 import SignIn from './src/pages/signInPage';
@@ -22,7 +22,6 @@ const SplashStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
 
-const HomeStack = createStackNavigator();
 const IntroStack = createStackNavigator();
 
 
@@ -103,6 +102,7 @@ export default function App ({ navigation }) {
     () => ({
       signIn: async ({email,password}) => {
         firebase.auth().signInWithEmailAndPassword(email, password).then(result => {
+            // console.log(result)
             setEmail(email);
             dispatch({ type: 'SIGN_IN', email: email/*, token: 'dummy-auth-token'*/ });
          }).catch(err => {
@@ -138,11 +138,11 @@ export default function App ({ navigation }) {
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
 
-        if (route.name === 'Home') {
+        if (route.name === 'Bíblia') {
           iconName = focused
             ? 'book-open'
             : 'bible';
-        } else if (route.name === 'Gota') {
+        } else if (route.name === 'Principal') {
           iconName = focused ? 'home' : 'home';
         } else if (route.name === 'Devocional') {
           iconName = focused ? 'dove' : 'dove';
@@ -156,18 +156,10 @@ export default function App ({ navigation }) {
       activeTintColor: 'steelblue',
       inactiveTintColor: 'gray',
     }}>
-      <Tabs.Screen name="Home" component={Home} options={{ title: "Bíblia"}}/>
-      <Tabs.Screen name="Gota" component={Gota} options={{ title: "Principal"}}/>
+      <Tabs.Screen name="Bíblia" component={Biblia} options={{ title: "Bíblia"}}/>
+      <Tabs.Screen name="Principal" component={Principal} options={{ title: "Principal"}}/>
       <Tabs.Screen name="Devocional" component={Devocional} options={{ title: "Devocional"}}/>
     </Tabs.Navigator> 
-    )
-  }
-  const HomeStackScreens = () => {
-    return (
-    <HomeStack.Navigator>
-            <HomeStack.Screen name="Home" component={TabScreens} options={{ title: "Arsenal da Fé" , headerTitleAlign: "center" , headerLeft: null}}/> 
-            <HomeStack.Screen name="Gota" component={Gota} options={{ title: "Gota", headerTitleAlign: "center"}} />   
-    </HomeStack.Navigator>
     )
   }
   return (
@@ -181,7 +173,7 @@ export default function App ({ navigation }) {
             ) : state.userEmail == null ? (
               <AuthStackScreens/>
             ) : (
-            <HomeStackScreens/>
+            <TabScreens/>
             )
         }
       </NavigationContainer>
