@@ -23,6 +23,7 @@
       "favicon": "./assets/favicon.png"
     },
     "description": "Aplicativo desenvolvido para dar suporte ao cristão.",
-    "githubUrl": "https://github.com/ninjadexter/playbook"
+    "githubUrl": "https://github.com/ninjadexter/playbook",
+    "sdkVersion": "38.0.0"
   }
 }

@@ -7,7 +7,8 @@ import { Ionicons,FontAwesome5,Entypo } from '@expo/vector-icons';
 import Splash from "./src/pages/splash";
 import Biblia from "./src/pages/bibliaPage";
 import Principal from "./src/pages/homePage"
-import Devocional from "./src/pages/devocionalPage";
+import Devocional from "./src/pages/devocionalPage"; //alterado para testar infinite scroll
+import DevConteudo from "./src/pages/devConteudo";
 import Intro from "./src/pages/introPage";
 import SignIn from './src/pages/signInPage';
 import SignUp from './src/pages/signUpPage';
@@ -16,13 +17,12 @@ import SignUp from './src/pages/signUpPage';
 import firebase from './src/config/firebase';
 import 'firebase/auth';
 import { AuthContext } from "./src/context/authContext";
-import { set } from 'react-native-reanimated';
+import { DevContext } from "./src/context/devContext";
 
 const SplashStack = createStackNavigator();
 const AuthStack = createStackNavigator();
 const Tabs = createBottomTabNavigator();
-
-const IntroStack = createStackNavigator();
+const AppStack = createStackNavigator();
 
 
 
@@ -119,6 +119,7 @@ export default function App ({ navigation }) {
     }),
     []
   );
+
   const AuthStackScreens = () => {
     return(
     <AuthStack.Navigator initialRouteName="SignIn">
@@ -132,6 +133,7 @@ export default function App ({ navigation }) {
     </AuthStack.Navigator>
     )
   }
+
   const TabScreens = () => {
     return(
     <Tabs.Navigator screenOptions={({ route }) => ({
@@ -162,21 +164,31 @@ export default function App ({ navigation }) {
     </Tabs.Navigator> 
     )
   }
+  const AppScreens = () => {
+    return(
+      <AppStack.Navigator>
+        <AppStack.Screen name = "Home" component ={TabScreens} options={{ title: 'Arsenal'}}/>
+        <AppStack.Screen name = "DevConteudo" component ={DevConteudo} options={{ title: 'Devocional'}}/>
+      </AppStack.Navigator>
+      );
+  }
   return (
-    <AuthContext.Provider value={authContext}>
-      <NavigationContainer>
-          {
-            state.isLoading ? (
-              <SplashStack.Navigator>
-                <SplashStack.Screen name="Splash" component={Splash} />
-              </SplashStack.Navigator>
-            ) : state.userEmail == null ? (
-              <AuthStackScreens/>
-            ) : (
-            <TabScreens/>
-            )
-        }
-      </NavigationContainer>
-    </AuthContext.Provider>
+    <DevContext.Provider>
+      <AuthContext.Provider value={ authContext }>
+        <NavigationContainer>
+            {
+              state.isLoading ? (
+                <SplashStack.Navigator>
+                  <SplashStack.Screen name="Splash" component={Splash} />
+                </SplashStack.Navigator>
+              ) : state.userEmail == null ? (
+                <AuthStackScreens/>
+              ) : (
+              <AppScreens/>
+              )
+          }
+        </NavigationContainer>
+      </AuthContext.Provider>
+    </DevContext.Provider>
   );
 }

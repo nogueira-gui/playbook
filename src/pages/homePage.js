@@ -7,13 +7,13 @@ import firebase from "../config/firebase"
 
 export default function Home(){
   
-  const [dados,setDados] = useState();
-  const usuarioRef = firebase.database().ref("gota/")
-  console.log(usuarioRef.child('01').child('1').child(1))
+  // const [dados,setDados] = useState();
+  // const usuarioRef = firebase.database().ref("gota/")
+  // console.log(usuarioRef.child('01').child('1').child(1))
 
     return (
     <View style={styles.container}>
-        <Text style={styles.texto}> {dados}</Text>
+        <Text style={styles.texto}> Teste</Text>
     </View>    
     )
 }
