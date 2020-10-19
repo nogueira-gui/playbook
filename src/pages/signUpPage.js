@@ -33,7 +33,7 @@ const SignUpPage = ({ navigation }) => {
          setMsg("cadastrado")
          setLoading(false);
          signUp({email});
-         // navigation.navigate("Intro")
+         navigation.navigate("Intro");
       }).catch(err => {
          setLoading(false);
          switch(err.message){ 

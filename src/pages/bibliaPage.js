@@ -9,7 +9,7 @@ const nvi = require ("../../biblia/nvi.json");
 const aa = require ("../../biblia/aa.json");
 const acf = require ("../../biblia/acf.json");
 
-export default function Biblia(){
+export default function Biblia({navigation}){
    const { signOut } = React.useContext(AuthContext);
    const [showSelec,setShowSelec] = React.useState(false);
    const [showSelecCap, setShowSelecCap] = React.useState(false);
@@ -18,8 +18,6 @@ export default function Biblia(){
    const [biblia, setBiblia] = React.useState(nvi);
    const [_renderLivroCap, setRenderLivro] = React.useState();
    const [_renderVers, setRenderVers] = React.useState();
-   const [_listaCap, setListaCap] = React.useState();  // Feito na promex
-
 
    const _nextChapter = () => {
       setCap(cap+1)
@@ -47,6 +45,7 @@ export default function Biblia(){
             <Text style={styles.vers} key={index}>{index+1} {item}</Text>
             )
          }))
+
        }, [cap,livro,biblia]);
 
        const _listaLivros = () => (

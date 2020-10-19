@@ -3,8 +3,10 @@ import {Text,View,SafeAreaView,FlatList,TouchableOpacity,StyleSheet,Image,  Acti
 import { AuthContext } from "../context/authContext";
 import * as firebase from 'firebase';
 import 'firebase/firestore';
-import Spacer from "../components/spacer";
+import ImageCard from '../components/imageCard';
 import { DevContext } from "../context/devContext";
+import { set } from 'react-native-reanimated';
+import Spacer from '../components/spacer';
 
 
 export default function Devocional({navigation}){
@@ -16,10 +18,7 @@ export default function Devocional({navigation}){
     const [isLoading, setIsLoading] = useState(false);
     const [isMoreLoading, setIsMoreLoading] = useState(false);
     const [lastDoc, setLastDoc] = useState(null);
-    const [capa, setCapa] = useState();
-
     const [devocional, setDevocional] = useState([]);
-
 
     const devRef = firebase.firestore().collection('devocionais');
 
@@ -31,16 +30,19 @@ export default function Devocional({navigation}){
       setIsLoading(true);
   
       const snapshot = await devRef.orderBy('id','desc').limit(3).get();
-  
+
       if (!snapshot.empty) {
         let newDevocional = [];
-  
+
         setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
   
         for (let i = 0; i < snapshot.docs.length; i++) {
+
           newDevocional.push(snapshot.docs[i].data());
+
+          // firebase.storage().ref(`capa/${newDevocional[i].id}.jpg`).getDownloadURL()
+          // .then( url  =>  newDevocional[i].urlCapa = url)
         }
-  
         setDevocional(newDevocional);
       } else {
         setLastDoc(null);
@@ -63,6 +65,8 @@ export default function Devocional({navigation}){
   
           for(let i = 0; i < snapshot.docs.length; i++) {
             newDevocional.push(snapshot.docs[i].data());
+            // firebase.storage().ref(`capa/${newDevocional[i].id}.jpg`).getDownloadURL()
+            // .then( url  =>  newDevocional[i].urlCapa = url)
           }
   
           setDevocional(newDevocional);
@@ -84,7 +88,7 @@ export default function Devocional({navigation}){
       }, 1000);
     }
 
-    const renderFooter = () => {
+    const renderFooter =  () => {
       if (!isMoreLoading) return true;
       
       return (
@@ -96,22 +100,15 @@ export default function Devocional({navigation}){
       )
     }
 
-    // firebase.storage().ref(`capa/${data.id}`).getDownloadURL()
-    // .then(url => setCapa(url))
-
-   const renderList = data => 
+  const renderList = data => 
       <TouchableOpacity
         style={styles.list}      
         onPress={() => selectItem(data)}
       >
-        {/* <Image
-          source={{ uri: capa }}
-          style={{ width: "97%" , height: 250, margin: 6, borderRadius: 10  }}
-        /> */}
-      <Text style={styles.item}>  {data.title}  </Text>
-    </TouchableOpacity>
+        <Text style={styles.item}>  {`${data.title}`} </Text>
+      <ImageCard id={data.id}/>
+      </TouchableOpacity>
 
-    
     const selectItem = (data) => { 
       navigation.push('DevConteudo',data);
     }
@@ -149,20 +146,18 @@ const styles = StyleSheet.create({
   container: {
      flex: 1,
      justifyContent: "center",
-     marginTop: 2,//Constants.statusBarHeight,
-    //  backgroundColor: "#265099",
-     // tintColor: "#FFF"
+     marginTop: 2,
   },
   item: {
-      padding: 10,
+      marginTop: 2,
       fontSize: 18,
       height: 44,
     },
   list: {
     backgroundColor: "skyblue",
-    paddingVertical: 180,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 5,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     marginVertical:5,
     marginHorizontal:5,
     borderRadius: 10

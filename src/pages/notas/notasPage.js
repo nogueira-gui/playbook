@@ -2,7 +2,8 @@ import React, {useState,UseEffect, useEffect} from 'react';
 import {Text,View,StyleSheet,TouchableOpacity} from 'react-native';
 
 
-export default function Home(){
+
+export default function NotasPage(){
   
   // const [gota,setGota] = useState();
   // const gotaRef = firebase.firestore().collection('gota');
@@ -13,37 +14,7 @@ export default function Home(){
     
     return (
     <View style={styles.container}>
-      <View style={styles.container3}>
-          <TouchableOpacity style={styles.avatar}> 
-              <Text>{`
-        Perfil`}</Text>
-          </TouchableOpacity>
-                  <Text style={styles.title}>Nome do usuário</Text>
-      </View>
-      <View style={styles.container2}>
-          <TouchableOpacity style={styles.box}> 
-              <Text>Ilustrações</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.box}> 
-              <Text>Gota</Text>
-          </TouchableOpacity>
-      </View>
-      <View style={styles.container2}>
-          <TouchableOpacity style={styles.box}> 
-              <Text>Notas</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.box}> 
-              <Text>Cursos</Text>
-          </TouchableOpacity>
-      </View>
-      <View style={styles.container2}>
-          <TouchableOpacity style={styles.box}> 
-              <Text>Mensagens</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.box}> 
-              <Text>Configurações</Text>
-          </TouchableOpacity>
-      </View>
+        <Text>{`Perfil`}</Text>
     </View>
     )
 }

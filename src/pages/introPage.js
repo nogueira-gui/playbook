@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet,View,Text,Image } from 'react-native';
 import AppIntroSlider from 'react-native-app-intro-slider';
-import Home from './homePage';
 const slides = [
   {
     key: 1,
@@ -68,7 +67,7 @@ const slides = [
   }
 ];
  
-const IntroPage = ({navigation}) => {
+const Intro = ({navigation}) => {
   const [showRealApp,setshowRealApp] = React.useState(false);
 
   const _renderItem = ({ item }) => {
@@ -86,7 +85,7 @@ const IntroPage = ({navigation}) => {
   const _onDone = () => {
     // navigation or simply by controlling state
     setshowRealApp(true);
-    navigation.goBack();
+    navigation.navigate('Home');
   }
   
   return(
@@ -108,4 +107,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default IntroPage
+export default Intro

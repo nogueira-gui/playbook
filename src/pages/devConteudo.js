@@ -2,7 +2,7 @@ import React,{useState,useEffect} from 'react';
 import {Text,View,Image,SafeAreaView,ScrollView,StyleSheet} from 'react-native';
 import firebase from "../config/firebase"
 
-export default function devConteudo({ route, navigation }){
+export default function devConteudo({ route }){
     const { date } = route.params;
     const { title } = route.params;
     const { sub } = route.params;

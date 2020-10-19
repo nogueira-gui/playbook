@@ -6,12 +6,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons,FontAwesome5,Entypo } from '@expo/vector-icons';
 import Splash from "./src/pages/splash";
 import Biblia from "./src/pages/bibliaPage";
-import Principal from "./src/pages/homePage"
-import Devocional from "./src/pages/devocionalPage"; //alterado para testar infinite scroll
+import Principal from "./src/pages/homePage";
+import Devocional from "./src/pages/devocionalPage";
 import DevConteudo from "./src/pages/devConteudo";
 import Intro from "./src/pages/introPage";
 import SignIn from './src/pages/signInPage';
 import SignUp from './src/pages/signUpPage';
+import NotasPage from './src/pages/notas/notasPage';
+import ConfigPage from './src/pages/conf/configPage';
 
 
 import firebase from './src/config/firebase';
@@ -76,7 +78,7 @@ export default function App ({ navigation }) {
   );
 
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
+    // realiza Fetch do token ou Email e navega para a pagina home caso validado
     const bootstrapAsync = async () => {
     //   let userToken;
       let userEmail;
@@ -84,14 +86,13 @@ export default function App ({ navigation }) {
         userEmail = await AsyncStorage.getItem('userEmail');
         // userToken = await AsyncStorage.getItem('userToken');
       } catch (e) {
-        // Restoring token failed
+        // Token falhou
         console.log('Erro ao recuperar: ',e)
       }
 
-      // After restoring token, we may need to validate it in production apps
+      // Depois de restaurar o token, necessita validar o app em produção
 
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
+      // Cria o switch de AuthScreen para AppScreen
       dispatch({ type: 'RESTORE_TOKEN', email: userEmail /*, token: userToken*/ });
     };
 
@@ -150,7 +151,7 @@ export default function App ({ navigation }) {
           iconName = focused ? 'dove' : 'dove';
         }
 
-        // You can return any component that you like here!
+        // Posso retornar qualquer componente aqui!!
         return <FontAwesome5 name={iconName} size={size} color={color} />;
       },
     })}
@@ -167,8 +168,15 @@ export default function App ({ navigation }) {
   const AppScreens = () => {
     return(
       <AppStack.Navigator>
-        <AppStack.Screen name = "Home" component ={TabScreens} options={{ title: 'Arsenal'}}/>
-        <AppStack.Screen name = "DevConteudo" component ={DevConteudo} options={{ title: 'Devocional'}}/>
+        <AppStack.Screen name = "Home" component ={TabScreens} 
+          options={{ headerShown: false,
+            // headerTitle: () => <Header navigation={navigation} 
+           }}
+        />
+        <AppStack.Screen name = "DevConteudo" component ={DevConteudo} />
+        <AppStack.Screen name = "Notas" component = {NotasPage}/>
+        <AppStack.Screen name = "Config" component = {ConfigPage} />
+        <AppStack.Screen name = "Intro" component = {Intro} options={{ headerShown: false}} />
       </AppStack.Navigator>
       );
   }
