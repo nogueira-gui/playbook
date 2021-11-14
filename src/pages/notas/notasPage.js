@@ -1,20 +1,53 @@
-import React, {useState,UseEffect, useEffect} from 'react';
-import {Text,View,StyleSheet,TouchableOpacity} from 'react-native';
+import React from 'react';
+import {View,StyleSheet} from 'react-native';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { FloatingAction } from "react-native-floating-action";
 
-
-
-export default function NotasPage(){
-  
-  // const [gota,setGota] = useState();
-  // const gotaRef = firebase.firestore().collection('gota');
-  // gotaRef.get()
-  // .then((msg) => {
-  //   setGota(msg)})
-  
+const actions = [
+  {
+     text: "Criar Nota",
+     icon: <FontAwesome5
+              raised
+              name='plus'
+           />,
+     name: "add_nota",
+     position: 1
+  },
+  {
+    text: "Filtrar",
+    icon: <FontAwesome5
+            raised  
+            name='filter'
+            />,
+    name: "filter",
+    position: 2
+  },
+  {
+    text: "Fontes",
+    icon: <FontAwesome5
+            raised  
+            name='font'
+            />,
+    name: "font",
+    position: 3
+  }
+];
+export default function NotasPage({navigation}){
     
     return (
     <View style={styles.container}>
-        <Text>{`Perfil`}</Text>
+        <FloatingAction
+            actions={actions}
+            onPressItem={name => {
+               if(`${name}` == 'add_nota'){
+                  navigation.push("Editor");
+               }else if (`${name}` == 'filter'){
+                 console.log('cliquei no filtro');
+               }else if (`${name}` == 'font'){
+                console.log('cliquei no fonte');
+              }
+            }}
+         />
     </View>
     )
 }
@@ -22,39 +55,8 @@ const styles = StyleSheet.create({
     container: {
        flex: 2,
        justifyContent: "space-around",
-       marginTop: 2,//Constants.statusBarHeight,
-      //  backgroundColor: "#265099",
-    // tintColor: "#FFF"
+       marginTop: 2,
     },
-    avatar: {
-      width: 100,
-      height: 100,
-      borderRadius: 360,
-      marginLeft: 15,
-      backgroundColor: "grey",
-      alignSelf: "flex-start"
-   },
-    container2: {
-      // flex: 1,
-      // alignContent: "space-around",
-      flexDirection: "row",
-      // width: useWindowDimensions.width*0.5,
-      justifyContent: "center",
-      // marginTop: 2,//Constants.statusBarHeight,
-     //  backgroundColor: "#265099",
-   // tintColor: "#FFF"
-   },
-   container3: {
-    // flex: 1,
-    // alignContent: "space-around",
-    flexDirection: "row",
-    // width: useWindowDimensions.width*0.5,
-    justifyContent: "flex-start",
-    alignItems: "center"
-    // marginTop: 2,//Constants.statusBarHeight,
-   //  backgroundColor: "#265099",
- // tintColor: "#FFF"
- },
     input:{
        tintColor: "#FFF"
     },
@@ -64,10 +66,8 @@ const styles = StyleSheet.create({
     },  
     box: {
       backgroundColor: "skyblue",
-      // paddingVertical: 5,
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
-      // marginVertical:5,
       marginHorizontal:10,
       borderRadius: 10,
       height: 150,

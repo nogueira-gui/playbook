@@ -1,17 +1,11 @@
-import React,{useState,useEffect,useContext} from 'react';
+import React,{useState,useEffect} from 'react';
 import {Text,View,SafeAreaView,FlatList,TouchableOpacity,StyleSheet,Image,  ActivityIndicator, RefreshControl} from 'react-native';
-import { AuthContext } from "../context/authContext";
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 import ImageCard from '../components/imageCard';
-import { DevContext } from "../context/devContext";
-import { set } from 'react-native-reanimated';
-import Spacer from '../components/spacer';
 
 
 export default function Devocional({navigation}){
-    const { signOut } = useContext(AuthContext);
-    // const { state } = useContext(DevContext);
 
     let onEndReachedCalledDuringMomentum = false;
 
@@ -40,8 +34,6 @@ export default function Devocional({navigation}){
 
           newDevocional.push(snapshot.docs[i].data());
 
-          // firebase.storage().ref(`capa/${newDevocional[i].id}.jpg`).getDownloadURL()
-          // .then( url  =>  newDevocional[i].urlCapa = url)
         }
         setDevocional(newDevocional);
       } else {
@@ -160,7 +152,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     marginVertical:5,
     marginHorizontal:5,
-    borderRadius: 10
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    elevation: 4,
   },
   input:{
      tintColor: "#FFF"

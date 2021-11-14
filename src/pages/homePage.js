@@ -1,46 +1,46 @@
-import React, {useState,UseEffect, useEffect} from 'react';
+import React from 'react';
 import {Text,View,StyleSheet,TouchableOpacity} from 'react-native';
 
 
-export default function Home(){
-  
-  // const [gota,setGota] = useState();
-  // const gotaRef = firebase.firestore().collection('gota');
-  // gotaRef.get()
-  // .then((msg) => {
-  //   setGota(msg)})
-  
+export default function Home({navigation}){
     
     return (
     <View style={styles.container}>
       <View style={styles.container3}>
-          <TouchableOpacity style={styles.avatar}> 
+          <TouchableOpacity style={styles.avatar}
+          onPress={() => { navigation.push('Perfil')}}> 
               <Text>{`
         Perfil`}</Text>
           </TouchableOpacity>
                   <Text style={styles.title}>Nome do usuário</Text>
       </View>
       <View style={styles.container2}>
-          <TouchableOpacity style={styles.box}> 
+          <TouchableOpacity style={styles.box}
+          onPress={() => { navigation.push('Ilustracoes')}}> 
               <Text>Ilustrações</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.box}> 
+          <TouchableOpacity style={styles.box}
+          onPress={() => { navigation.push('Gota')}}> 
               <Text>Gota</Text>
           </TouchableOpacity>
       </View>
       <View style={styles.container2}>
-          <TouchableOpacity style={styles.box}> 
+          <TouchableOpacity style={styles.box}
+            onPress={() => { navigation.push('Notas')}}> 
               <Text>Notas</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.box}> 
+          <TouchableOpacity style={styles.box}
+          onPress={() => { navigation.push('Cursos')}}> 
               <Text>Cursos</Text>
           </TouchableOpacity>
       </View>
       <View style={styles.container2}>
-          <TouchableOpacity style={styles.box}> 
+          <TouchableOpacity style={styles.box}
+          onPress={() => { navigation.push('Mensagens')}}> 
               <Text>Mensagens</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.box}> 
+          <TouchableOpacity style={styles.box}
+          onPress={() => { navigation.push('Config')}}> 
               <Text>Configurações</Text>
           </TouchableOpacity>
       </View>
@@ -51,9 +51,7 @@ const styles = StyleSheet.create({
     container: {
        flex: 2,
        justifyContent: "space-around",
-       marginTop: 2,//Constants.statusBarHeight,
-      //  backgroundColor: "#265099",
-    // tintColor: "#FFF"
+       marginTop: 2,
     },
     avatar: {
       width: 100,
@@ -64,25 +62,13 @@ const styles = StyleSheet.create({
       alignSelf: "flex-start"
    },
     container2: {
-      // flex: 1,
-      // alignContent: "space-around",
       flexDirection: "row",
-      // width: useWindowDimensions.width*0.5,
       justifyContent: "center",
-      // marginTop: 2,//Constants.statusBarHeight,
-     //  backgroundColor: "#265099",
-   // tintColor: "#FFF"
    },
    container3: {
-    // flex: 1,
-    // alignContent: "space-around",
     flexDirection: "row",
-    // width: useWindowDimensions.width*0.5,
     justifyContent: "flex-start",
     alignItems: "center"
-    // marginTop: 2,//Constants.statusBarHeight,
-   //  backgroundColor: "#265099",
- // tintColor: "#FFF"
  },
     input:{
        tintColor: "#FFF"
@@ -93,14 +79,17 @@ const styles = StyleSheet.create({
     },  
     box: {
       backgroundColor: "skyblue",
-      // paddingVertical: 5,
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
-      // marginVertical:5,
       marginHorizontal:10,
       borderRadius: 10,
       height: 150,
-      width: 150
+      width: 150,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.5,
+      shadowRadius: 2,
+      elevation: 4,
     },
      texto: {
        fontSize: 18,

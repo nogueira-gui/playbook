@@ -1,19 +1,13 @@
-import React, {useState,UseEffect, useEffect} from 'react';
-import {Text,View,StyleSheet,TouchableOpacity} from 'react-native';
+import React from 'react';
+import {Text,View,StyleSheet} from 'react-native';
 
 
 export default function ConfigPage(){
   
-  // const [gota,setGota] = useState();
-  // const gotaRef = firebase.firestore().collection('gota');
-  // gotaRef.get()
-  // .then((msg) => {
-  //   setGota(msg)})
-  
     
     return (
     <View style={styles.container}>
-        <Text>{`Perfil`}</Text>
+        <Text>Configurações</Text>
     </View>
     )
 }
@@ -21,39 +15,8 @@ const styles = StyleSheet.create({
     container: {
        flex: 2,
        justifyContent: "space-around",
-       marginTop: 2,//Constants.statusBarHeight,
-      //  backgroundColor: "#265099",
-    // tintColor: "#FFF"
+       marginTop: 2,
     },
-    avatar: {
-      width: 100,
-      height: 100,
-      borderRadius: 360,
-      marginLeft: 15,
-      backgroundColor: "grey",
-      alignSelf: "flex-start"
-   },
-    container2: {
-      // flex: 1,
-      // alignContent: "space-around",
-      flexDirection: "row",
-      // width: useWindowDimensions.width*0.5,
-      justifyContent: "center",
-      // marginTop: 2,//Constants.statusBarHeight,
-     //  backgroundColor: "#265099",
-   // tintColor: "#FFF"
-   },
-   container3: {
-    // flex: 1,
-    // alignContent: "space-around",
-    flexDirection: "row",
-    // width: useWindowDimensions.width*0.5,
-    justifyContent: "flex-start",
-    alignItems: "center"
-    // marginTop: 2,//Constants.statusBarHeight,
-   //  backgroundColor: "#265099",
- // tintColor: "#FFF"
- },
     input:{
        tintColor: "#FFF"
     },
@@ -61,17 +24,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#AAA',
       marginHorizontal: 10,
     },  
-    box: {
-      backgroundColor: "skyblue",
-      // paddingVertical: 5,
-      alignItems: 'flex-start',
-      justifyContent: 'flex-start',
-      // marginVertical:5,
-      marginHorizontal:10,
-      borderRadius: 10,
-      height: 150,
-      width: 150
-    },
      texto: {
        fontSize: 18,
        textAlign: "justify",

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "arsenal da fé",
-    "slug": "ePlayBook",
+    "name": "Bíblia Fácil de Usar",
+    "slug": "EasyBible",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,11 +19,19 @@
     "ios": {
       "supportsTablet": true
     },
+    "android": {
+      "package": "com.simpleBooks.bibliaFacilDeUsar",
+      "versionCode": 0,
+      "config": {
+        "googleMobileAdsAppId": "ca-app-pub-8609227792865969~9352018558" 
+      }
+    },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "facebookScheme": "fb626876311314363",
+    "facebookDisplayName": "Bíblia Fácil de Usar",
     "description": "Aplicativo desenvolvido para dar suporte ao cristão.",
-    "githubUrl": "https://github.com/ninjadexter/playbook",
-    "sdkVersion": "38.0.0"
+    "githubUrl": "https://github.com/ninjadexter/playbook"
   }
 }

@@ -73,9 +73,7 @@ const styles = StyleSheet.create({
     container: {
        flex: 1,
        justifyContent: "center",
-       marginTop: 2,//Constants.statusBarHeight,
-      //  backgroundColor: "#265099",
-       // tintColor: "#FFF"
+       marginTop: 2,
     },
     input:{
        tintColor: "#FFF"
