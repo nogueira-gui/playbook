@@ -16,6 +16,7 @@ const acf = require ("../../biblia/acf.json");
 
 export default function Biblia({navigation, route}){
    const [modalVisible, setModalVisible] = React.useState(false);
+   const scrollViewRef = React.useRef(null);
    const [livro,setLivro] = React.useState(0);
    const [cap, setCap] = React.useState(0);
    const [biblia, setBiblia] = React.useState(acf);
@@ -46,10 +47,15 @@ export default function Biblia({navigation, route}){
    React.useEffect(() => {
          if(!isLoadedParams){
             if(route.params?.data){
-               console.log("parametros: ",route.params?.data);
                setLivro(route.params?.data.livro);
                setCap(route.params?.data.cap);
-               setYOffSet(route.params?.data.yOffset);
+               if(route.params?.data.yOffset && scrollViewRef.current !== null){
+                  setYOffSet(route.params?.data.yOffset);
+                  scrollViewRef.current.scrollTo({
+                     y: route.params?.data.yOffset,
+                     animated: true,
+                  });
+               }
             }else{
                setLivro(0);
                setCap(0);
@@ -68,8 +74,7 @@ export default function Biblia({navigation, route}){
       const saveRecentPageView = async () => {
          try {
             var jsonValue = JSON.stringify({data:{livro, cap, yOffset}});
-            console.log("Estou gravando " , jsonValue)
-            await AsyncStorage.setItem("@RecentPageView",jsonValue).then(console.log("Salvo!"));
+            await AsyncStorage.setItem("@RecentPageView",jsonValue);
          } catch (error) {
             console.log(error);
          }
@@ -160,6 +165,7 @@ export default function Biblia({navigation, route}){
          <ScrollView style={styles.scrollView} 
                showsVerticalScrollIndicator={false}
                onMomentumScrollEnd={event => setYOffSet(event.nativeEvent.contentOffset.y)}
+               ref={scrollViewRef}
                // contentOffset={{y:yOffset}}
          >
             <Text style={styles.title}>{_renderLivroCap}</Text>
@@ -178,7 +184,7 @@ export default function Biblia({navigation, route}){
                <Button title="Anterior" onPress={() => {_backBook()}} /> :
                <Button title="Anterior" enabled onPress={()=> {_backChapter()}}/> 
             }
-            <Button title={biblia[livro].name +" "+(cap+1)} onPress={() => {setModalVisible(true),setCap(0)}} />
+            <Button title={biblia[livro].name +" "+(cap+1)} onPress={() => {setModalVisible(true)}} />
             {
             biblia[livro].abbrev == "ap" & cap == 21 ? //Caso seja o ultimo livro e ultimo cap desabilita botão Proximo
                <Button title= "Proximo" disabled /> :
