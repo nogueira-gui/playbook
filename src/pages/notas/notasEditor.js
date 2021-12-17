@@ -1,12 +1,24 @@
-import React from 'react';
+import React,{ useState } from 'react';
 import {View,StyleSheet} from 'react-native';
 import {Input} from 'react-native-elements';
 import Spacer from '../../components/spacer';
 
 export default function NotasEditor({navigation}){
-   
+   const [noteTitle, setNoteTitle] = useState("");
+   const [noteText, setNoteText] = useState("");
     return (
         <View style={styles.container}>
+            <Input
+                placeholder='Digite o título da nota'
+                autoCapitalize="none"
+                multiline
+                inputContainerStyle={{borderBottomWidth:0,borderColor:"transparent"}}
+                inputStyle= {{fontSize:20,height: 320}}
+                autoCorrect={true}
+                clearButtonMode="always"
+                value={noteTitle}
+                onChangeText={(txt) => setNoteTitle(txt)}
+            />
             <Spacer/>
             <Input
                 placeholder='Digite aqui...'
@@ -16,8 +28,8 @@ export default function NotasEditor({navigation}){
                 inputStyle= {{fontSize:20,height: 320}}
                 autoCorrect={true}
                 clearButtonMode="always"
-                // value={text}
-                // onChangeText={(txt) => setText(txt)}
+                value={noteText}
+                onChangeText={(txt) => setNoteText(txt)}
             />
         </View>
     )

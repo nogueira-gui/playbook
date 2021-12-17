@@ -4,24 +4,26 @@ import {
    AdMobInterstitial,
    setTestDeviceIDAsync,
  } from 'expo-ads-admob'
-import {Text,View,Button,SafeAreaView,ScrollView,StyleSheet} from 'react-native';
+import {Text,View,Modal,Alert,Button,SafeAreaView, ScrollView,StyleSheet, Pressable} from 'react-native';
 import Spacer from "../components/spacer";
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import CardVersicle from '../components/cardVersicle';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //livros padroes
 const nvi = require ("../../biblia/nvi.json");
 const aa = require ("../../biblia/aa.json");
 const acf = require ("../../biblia/acf.json");
 
-export default function Biblia({navigation}){
-   const [showSelec,setShowSelec] = React.useState(false);
-   const [showSelecCap, setShowSelecCap] = React.useState(false);
+export default function Biblia({navigation, route}){
+   const [modalVisible, setModalVisible] = React.useState(false);
    const [livro,setLivro] = React.useState(0);
    const [cap, setCap] = React.useState(0);
-   const [versiculos, setVersiculos] = React.useState("");
    const [biblia, setBiblia] = React.useState(acf);
+   const [versicle, setVersicle] = React.useState(0);
    const [_renderLivroCap, setRenderLivro] = React.useState();
    const [buildVersText, setBuildVersText] = React.useState();
-   const [yOffset, setYOffSet] = React.useState();
+   const [yOffset, setYOffSet] = React.useState(0);
+   const [isLoadedParams, setIsLoadedParams] = React.useState(false);
 
    const _nextChapter = () => {
       setCap(cap+1)
@@ -42,59 +44,132 @@ export default function Biblia({navigation}){
       return
    }
    React.useEffect(() => {
-      var vers = "";
-         setRenderLivro( biblia[livro].name +" "+(cap+1));
+         if(!isLoadedParams){
+            if(route.params?.data){
+               console.log("parametros: ",route.params?.data);
+               setLivro(route.params?.data.livro);
+               setCap(route.params?.data.cap);
+               setYOffSet(route.params?.data.yOffset);
+            }else{
+               setLivro(0);
+               setCap(0);
+               setYOffSet(0);
+            }
+            setIsLoadedParams(true);
+         }else{
+            setRenderLivro( biblia[livro].name +" "+(cap+1));
+            setBuildVersText( biblia[livro].chapters[cap].map((item,index) => (
+               <CardVersicle key={index} {...{livro, cap, index, item}}/>
+            )));
+            saveRecentPageView();
+         }
+       }, [cap,livro,biblia,yOffset]);
 
-         setBuildVersText( biblia[livro].chapters[cap].map((item,index) => {
-            vers = `${vers}\n \n ${index+1} ${item}`;
-         }));
-         setVersiculos(vers);
-         renderText();
-       }, [cap,livro,biblia]);
-
-       const renderText = () => (
-          <>
-            <Text selectable={true} selectionColor='lightgrey' style={styles.vers}>{versiculos}</Text>
-            <AdMobBanner
-              bannerSize="banner"
-              adUnitID="ca-app-pub-3940256099942544/6300978111"
-              servePersonalizedAds={false}// true or false
-              onDidFailToReceiveAdWithError={(err) => console.error(err)}
-               />
-         </>
-       )
-
+      const saveRecentPageView = async () => {
+         try {
+            var jsonValue = JSON.stringify({data:{livro, cap, yOffset}});
+            console.log("Estou gravando " , jsonValue)
+            await AsyncStorage.setItem("@RecentPageView",jsonValue).then(console.log("Salvo!"));
+         } catch (error) {
+            console.log(error);
+         }
+      }
       const _listaLivros = () => (
          <>
            {biblia.map((item,index) => (
-            <TouchableOpacity key={index} onPress={() => {setLivro(index)}}>
+            <Pressable key={index} onPress={() => {setLivro(index), setCap(0), setVersicle(0)}}>
                <Text style={ livro == index ? styles.itemSelecionado : styles.selector}>{item.name}</Text>
-            </TouchableOpacity>
+            </Pressable>
            ))}
          </>
       ); 
       const ListaCap = () => (
          <>
          {  biblia[livro].chapters.map((value,id) => ( 
-         <TouchableOpacity key={id} onPress={() => {setCap(id), setShowSelec(false)}}>
-            <Text style={ cap == id ? styles.itemSelecionado : styles.selector}>
-               Capitulo - {id+1}
+         <Pressable key={id} onPress={() => {setCap(id), setVersicle(0)}}>
+            <Text style={ cap == id ? styles.selectedCap : styles.selectorCap}>
+               {id+1}
             </Text>
-         </TouchableOpacity>
+         </Pressable>
+         ))}
+         </>
+      ); 
+      const ListaVers = () => (
+         <>
+         {  biblia[livro].chapters[cap].map((value,id) => ( 
+         <Pressable key={id} onPress={() => {setVersicle(id), setModalVisible(false)}}>
+            <Text style={ versicle == id ? styles.selectedCap : styles.selectorCap}>
+               {id+1}
+            </Text>
+         </Pressable>
          ))}
          </>
       ); 
     return (
       <SafeAreaView style={styles.container}>
-      { !showSelec ? (
          <>
+         <Modal
+         animationType="slide"
+         transparent={true}
+         visible={modalVisible}
+         onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+         }}>
+         <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+            <View style={styles.ScrollSelector}>  
+               <>     
+                  <View>
+                     <Text>Livro</Text>
+                     <ScrollView>
+                        {_listaLivros()}
+                        <Spacer/>
+                     </ScrollView>
+                  </View>   
+                  <View>
+                     <Text>Cap</Text>
+                     <ScrollView>
+                        {ListaCap()}
+                        <Spacer/>
+                     </ScrollView> 
+                  </View>    
+                  <View>
+                     <Text>Vers.</Text>
+                     <ScrollView>
+                        {ListaVers()}
+                        <Spacer/>
+                     </ScrollView> 
+                  </View>  
+               </>  
+            </View>
+               <Pressable
+               style={[styles.buttonModal, styles.buttonClose]}
+               onPress={() => setModalVisible(!modalVisible)}>
+               <Text style={styles.textStyle}>Fechar</Text>
+               </Pressable>
+            </View>
+         </View>
+         <AdMobBanner style={{alignSelf:'center'}}
+               bannerSize="banner"
+               adUnitID="ca-app-pub-3940256099942544/6300978111"
+               servePersonalizedAds={false}// true or false
+               onDidFailToReceiveAdWithError={(err) => console.error(err)}
+                  />
+         </Modal>
          <ScrollView style={styles.scrollView} 
-               onScroll={event => { 
-                  setYOffSet(event.nativeEvent.contentOffset.y);
-                }}
+               showsVerticalScrollIndicator={false}
+               onMomentumScrollEnd={event => setYOffSet(event.nativeEvent.contentOffset.y)}
+               // contentOffset={{y:yOffset}}
          >
             <Text style={styles.title}>{_renderLivroCap}</Text>
-            {renderText()}
+            {buildVersText}
+            <AdMobBanner style={{alignSelf:'center'}}
+               bannerSize="banner"
+               adUnitID="ca-app-pub-3940256099942544/6300978111"
+               servePersonalizedAds={false}// true or false
+               onDidFailToReceiveAdWithError={(err) => console.error(err)}
+                  />
          </ScrollView>
          <View style={styles.fixToText}>
             {biblia[livro].abbrev == "gn" & cap == 0 ? // Se for o primeiro livro disabilite o botao voltar
@@ -103,7 +178,7 @@ export default function Biblia({navigation}){
                <Button title="Anterior" onPress={() => {_backBook()}} /> :
                <Button title="Anterior" enabled onPress={()=> {_backChapter()}}/> 
             }
-            <Button title={biblia[livro].name +" "+(cap+1)} onPress={() => {setShowSelec(true),setCap(0)}} />
+            <Button title={biblia[livro].name +" "+(cap+1)} onPress={() => {setModalVisible(true),setCap(0)}} />
             {
             biblia[livro].abbrev == "ap" & cap == 21 ? //Caso seja o ultimo livro e ultimo cap desabilita botão Proximo
                <Button title= "Proximo" disabled /> :
@@ -113,22 +188,6 @@ export default function Biblia({navigation}){
             }
          </View>
       </>
-      ) : (      
-      <View style={styles.ScrollSelector}>  
-         <>     
-            <ScrollView>
-               {_listaLivros()}
-               <Spacer/>
-            </ScrollView>       
-            <ScrollView>
-               {ListaCap()}
-               <Spacer/>
-            </ScrollView> 
-         </>  
-      </View>
-
-      ) 
-      }
       </SafeAreaView>
   );
 }
@@ -141,7 +200,8 @@ const styles = StyleSheet.create({
        marginTop: 2,
     },
     fixToText: {
-      marginBottom: 10,
+      // marginBottom: 10,
+      padding:5,
       flexDirection: 'row',
       justifyContent: 'space-between',
     },
@@ -151,15 +211,14 @@ const styles = StyleSheet.create({
     scrollView: {
       backgroundColor: 'white',
       marginHorizontal: 8,
+      marginTop:20,
       marginBottom: 3
     },
      vers: {
        fontSize: 16,
-      //  textAlign: "justify",
        color: 'black',
-       alignSelf: "center",
        marginTop: 15,
-       marginBottom: 50,
+       marginBottom: 5,
      },
      selector: {
       fontSize: 16,
@@ -168,12 +227,20 @@ const styles = StyleSheet.create({
       alignSelf: "center",
       marginTop: 15,
     },
+    selectorCap: { 
+      fontSize: 24,
+      //  textAlign: "justify",
+       color: 'black',
+       alignSelf: "center",
+       marginTop: 15,
+    },
      title: {
       fontSize: 25,
       textAlign: "justify",
       color: 'black',
       marginLeft: 15,
       marginRight: 15,
+      marginTop:60,
       alignSelf: "center",
       fontWeight:"bold"
       
@@ -199,7 +266,8 @@ const styles = StyleSheet.create({
     },
     ScrollSelector: {
        alignContent: "space-between",
-       flexDirection: "row"
+       flexDirection: "row",
+       marginBottom:20
     },
     itemSelecionado:{
       color: 'blue',
@@ -210,5 +278,59 @@ const styles = StyleSheet.create({
       marginRight: 15,
       alignSelf: "center",
       marginTop: 15
-    }
+    },
+    selectedCap:{
+      color: 'blue',
+      fontWeight:"bold",
+      fontSize: 24,
+      textAlign: "justify",
+      marginLeft: 15,
+      marginRight: 15,
+      alignSelf: "center",
+      marginTop: 15
+    },
+  centeredView: {
+   flex: 1,
+   justifyContent: 'center',
+   alignItems: 'center',
+   marginTop: 22,
+ },
+ modalView: {
+   margin: "8%",
+   marginVertical: "30%",
+   backgroundColor: 'white',
+   borderRadius: 20,
+   paddingTop:20,
+   paddingHorizontal:"20%",
+   paddingBottom:"20%",
+   alignItems: 'center',
+   shadowColor: '#000',
+   shadowOffset: {
+     width: 0,
+     height: 2,
+   },
+   shadowOpacity: 0.25,
+   shadowRadius: 4,
+   elevation: 5,
+ },
+ buttonModal: {
+   borderRadius: 20,
+   padding: 10,
+   elevation: 2,
+ },
+ buttonOpen: {
+   backgroundColor: '#F194FF',
+ },
+ buttonClose: {
+   backgroundColor: '#2196F3',
+ },
+ textStyle: {
+   color: 'white',
+   fontWeight: 'bold',
+   textAlign: 'center',
+ },
+ modalText: {
+   marginBottom: 15,
+   textAlign: 'center',
+ },
  });

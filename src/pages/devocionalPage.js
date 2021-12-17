@@ -1,5 +1,5 @@
 import React,{useState,useEffect} from 'react';
-import {Text,View,SafeAreaView,FlatList,TouchableOpacity,StyleSheet,Image,  ActivityIndicator, RefreshControl} from 'react-native';
+import {Text,View,SafeAreaView,FlatList,TouchableOpacity,StyleSheet,  ActivityIndicator, RefreshControl} from 'react-native';
 import * as firebase from 'firebase';
 import 'firebase/firestore';
 import ImageCard from '../components/imageCard';

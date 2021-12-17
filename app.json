@@ -23,7 +23,7 @@
       "package": "com.simpleBooks.bibliaFacilDeUsar",
       "versionCode": 0,
       "config": {
-        "googleMobileAdsAppId": "ca-app-pub-8609227792865969~9352018558" 
+        "googleMobileAdsAppId": "ca-app-pub-8609227792865969~9352018558"
       }
     },
     "web": {
