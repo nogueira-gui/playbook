@@ -7,7 +7,7 @@ export default  function CardVersicle(props){
     const livro = props.livro;
     const cap = props.cap;
     const index = props.index;
-    const item = props.item;
+    const item = props.item.text || props.item; 
     const [bgColor, setBgColor] = useState(null);
     const [selectedColor, setSelectedColor] = useState("grey");
     
@@ -43,12 +43,13 @@ export default  function CardVersicle(props){
     }
 
     return(
-        <TouchableOpacity key={index} style={
-            {
-               backgroundColor: bgColor,
-               opacity: 0.6,
+        <TouchableOpacity key={index} 
+            style={
+                {
+                backgroundColor: bgColor,
+                opacity: 0.6,
+                }
             }
-         } 
             onPress={()=>{
                 if(bgColor == null){
                     setBgColor(selectedColor);
