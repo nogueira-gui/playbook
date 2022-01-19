@@ -1,78 +1,100 @@
 import React, { useState } from 'react';
-import { Alert, Modal, StyleSheet, Text, Pressable, View } from 'react-native';
+import { StyleSheet, Text, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AntDesign } from '@expo/vector-icons'; 
+const appVersion = require("../../../app.json");
 
-const ConfigPage = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+const ConfigPage = ({navigation, route}) => {
+
+  const settings = route.params?.settings;
+  const bibleVersions = route.params?.bibleVersions;
+  const appearance = route.params?.appearance;
+  const language = route.params?.language;
+  const clearData = route.params?.clearData;
+  const clearDataMessageAlert = route.params?.clearDataMessageAlert;
+  const clearMessageDone = route.params?.clearMessageDone;
+  const donate = route.params?.donate;
+  const about = route.params?.about;
+  const confirm = route.params?.confirm;
+  const cancel = route.params?.cancel;
+
+  const clearAllData = async () => {
+    AsyncStorage.getAllKeys()
+        .then(keys => AsyncStorage.multiRemove(keys))
+        .then(() => alert(clearMessageDone));
+    
+  }
+
+  const showAlert = () =>
+  Alert.alert(
+    clearData,
+    clearDataMessageAlert,
+    [
+      {
+        text: cancel,
+        style: 'cancel',
+      },
+      {
+        text: confirm,
+        onPress: () => clearAllData(),
+        style: 'confirm',
+      },
+    ],
+    {
+      cancelable: true,
+    }
+  );
+
   return (
-    <View style={styles.centeredView}>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Hello World!</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>Hide Modal</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
-      <Pressable style={[styles.button, styles.buttonOpen]} onPress={() => setModalVisible(true)}>
-        <Text style={styles.textStyle}>Show Modal</Text>
-      </Pressable>
-    </View>
+    <SafeAreaView>
+      <Text style={styles.title}>{settings}</Text>
+      <TouchableOpacity style={styles.itemArea}>
+        <Text style={{fontSize:24}}>{bibleVersions}</Text>
+        <AntDesign name="right" size={15} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemArea}>
+        <Text style={{fontSize:24}}>{appearance}</Text>
+        <AntDesign name="right" size={15} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemArea}>
+        <Text style={{fontSize:24}}>{language}</Text>
+        <AntDesign name="right" size={15} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemArea} 
+      onPress={()=>{showAlert()}}>
+        <Text style={{fontSize:24}}>{clearData}</Text>
+        <AntDesign name="right" size={15} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemArea}>
+        <Text style={{fontSize:24}}>{donate}</Text>
+        <AntDesign name="right" size={15} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.itemArea}>
+        <Text style={{fontSize:24}}>{about}</Text>
+        <AntDesign name="right" size={15} color="black" />
+      </TouchableOpacity>
+      <Text style={styles.appVersionStyle}>{`App Version ${appVersion.expo.version}`}</Text>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
+  itemArea: {
+    alignItems: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    backgroundColor: "transparent",
+    padding: "5%",
   },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+  title:{
+    fontSize:30,
+    alignSelf: "center",
+    marginBottom:"10%",
+    marginTop:"10%",
   },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-  },
+  appVersionStyle:{
+    alignSelf:"center",
+  }
 });
 
 export default ConfigPage;

@@ -4,11 +4,13 @@ import {
    AdMobInterstitial,
    setTestDeviceIDAsync,
  } from 'expo-ads-admob'
-import {Text,View,Modal,Alert,Button,SafeAreaView, ScrollView,StyleSheet, Pressable} from 'react-native';
+import {Text,View,Modal,FlatList,SafeAreaView, ScrollView,StyleSheet, Pressable} from 'react-native';
 import Spacer from "../components/spacer";
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import CardVersicle from '../components/cardVersicle';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import adjust from '../utils/fontAdjust';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Entypo } from '@expo/vector-icons';
 //livros padroes
 const nvi = require ("../../biblia/nvi.json");
 const aa = require ("../../biblia/aa.json");
@@ -83,6 +85,7 @@ const kjv = [
 ];
 export default function Biblia({navigation, route}){
    const [modalVisible, setModalVisible] = React.useState(false);
+   const [modalVerseOption, setModalVerseOption] = React.useState(false);
    const scrollViewRef = React.useRef(null);
    const [livro,setLivro] = React.useState(0);
    const [cap, setCap] = React.useState(0);
@@ -93,6 +96,11 @@ export default function Biblia({navigation, route}){
    const [yOffset, setYOffSet] = React.useState(0);
    const [isLoadedParams, setIsLoadedParams] = React.useState(false);
    const [dataSourceCords, setDataSourceCords] = React.useState([]);
+   const [switchSelector, setSwitchSelector] = React.useState("book");
+   const closeButton = route.params?.close;
+   const bookT = route.params?.book;
+   const chapterT = route.params?.chapter;
+   const verseT = route.params?.verse;
 
    const _nextChapter = () => {
       setCap(cap+1)
@@ -114,13 +122,14 @@ export default function Biblia({navigation, route}){
    }
    React.useEffect(() => {
          if(!isLoadedParams){
-            if(route.params?.data){
-               setLivro(route.params?.data.livro);
-               setCap(route.params?.data.cap);
-               if(route.params?.data.yOffset && scrollViewRef.current !== null){
-                  setYOffSet(route.params?.data.yOffset);
+            if(route.params?.recentPage?.data){
+               getBible();
+               setLivro(route.params?.recentPage.data.livro);
+               setCap(route.params?.recentPage.data.cap);
+               if(route.params?.recentPage.data.yOffset && scrollViewRef.current !== null){
+                  setYOffSet(route.params?.recentPage.data.yOffset);
                   scrollViewRef.current.scrollTo({
-                     y: route.params?.data.yOffset,
+                     y: route.params?.recentPage.data.yOffset,
                      animated: true,
                   });
                }else{setYOffSet(0);}
@@ -158,10 +167,36 @@ export default function Biblia({navigation, route}){
                }
             saveRecentPageView();
          }
-         console.log(dataSourceCords);
        }, [cap,livro,biblia,yOffset]);
 
+      const getBible = async () => {
+         try{
+            await AsyncStorage.getItem("@bibleVersion").then((value) => {
+               if(value != biblia){
+                  if(value == "kjv"){
+                     setBiblia({bible:kjv,version:"kjv"});
+                     return;
+                  }
+                  if(value == "nvi"){
+                     setBiblia({bible:nvi,version:"nvi"});
+                     return;
+                  }
+                  if(value == "acf"){
+                     setBiblia({bible:acf,version:"acf"});
+                     return;
+                  }
+                  if(value == "acf"){
+                     setBiblia({bible:aa,version:"aa"});
+                     return;
+                  }
+               }
+            })
+         }catch(e){console.error(e);}
+      }
+
       const saveRecentPageView = async () => {
+         //TODO - evitar que o asyncStorage seja enfileirado ao passar rapidamente varios capitulos
+         // fazer que uma nova requisição invalide a anterior
          try {
             var jsonValue = "";
             if(livro==0 && cap == 0 && yOffset == 0){
@@ -178,38 +213,17 @@ export default function Biblia({navigation, route}){
       const _listaLivros = () => (
          <>
            {biblia.bible.map((item,index) => (
-            <Pressable key={index} onPress={() => {setLivro(index), setCap(0), setVersicle(0)}}>
+            <Pressable key={index} 
+               onPress={() => {
+                  setLivro(index),
+                  setCap(0),
+                  setVersicle(0),
+                  scrollViewRef.current.scrollTo({y:1, animated:false}),
+                  setSwitchSelector("chapter")}}
+            >
                <Text style={ livro == index ? styles.itemSelecionado : styles.selector}>{item.name}</Text>
             </Pressable>
            ))}
-         </>
-      ); 
-      const ListaCap = () => (
-         <>
-         {  biblia.bible[livro].chapters.map((value,id) => ( 
-         <Pressable key={id} onPress={() => {setCap(id), setVersicle(0)}}>
-            <Text style={ cap == id ? styles.selectedCap : styles.selectorCap}>
-               {id+1}
-            </Text>
-         </Pressable>
-         ))}
-         </>
-      ); 
-      const ListaVers = () => (
-         <>
-         {  biblia.version == "kjv" ? biblia.bible[livro].chapters[cap].verses.map((value,id) => ( 
-         <Pressable key={id} onPress={() => {setVersicle(id),scrollHandler(id);}}>
-            <Text style={ versicle == id ? styles.selectedCap : styles.selectorCap}>
-               {id+1}
-            </Text>
-         </Pressable>
-         )): biblia.bible[livro].chapters[cap].map((value,id) => ( 
-            <Pressable key={id} onPress={() => {setVersicle(id),scrollHandler(id);}}>
-               <Text style={ versicle == id ? styles.selectedCap : styles.selectorCap}>
-                  {id+1}
-               </Text>
-            </Pressable>
-            ))}
          </>
       ); 
 
@@ -222,52 +236,155 @@ export default function Biblia({navigation, route}){
              animated: true,
            });
          } else {
-           alert('Out of Max Index');
+           console.log('Out of Max Index')
          }
        };
+
+      const createRowsChapter = () => {
+         const columns = 5;
+         let dataList = [];
+         if(switchSelector == "chapter"){
+            biblia.bible[livro].chapters.map((cap, id) => {
+               dataList.push({id: id+1 < 10 ? "0"+(id+1).toString() : (id+1).toString() ,
+               empty: false,
+            })});
+         }else{
+            return;
+         }
+         const rows = Math.floor(dataList.length / columns);
+         let lastRowElements = dataList.length - rows * columns;
+       
+         while (lastRowElements !== columns) {
+            dataList.push({
+             id: `empty-${lastRowElements}`,
+             empty: true
+           });
+           lastRowElements += 1;
+         }
+         return dataList;
+       }
+
+       const createRowsVersicle = () => {
+         const columns = 5;
+         let dataList = [];
+         if(switchSelector == "versicle"){
+            if(biblia.version=="kjv"){
+               biblia.bible[livro].chapters[cap].verses.map((cap, id) => {
+                  dataList.push({id: id+1 < 10 ? "0"+(id+1).toString() : (id+1).toString() ,
+                  empty: false,
+               })});
+            }else{
+               biblia.bible[livro].chapters[cap].map((cap, id) => {
+                  dataList.push({id: id+1 < 10 ? "0"+(id+1).toString() : (id+1).toString() ,
+                  empty: false,
+               })});
+            }
+         }else{return;}
+         const rows = Math.floor(dataList.length / columns);
+         let lastRowElements = dataList.length - rows * columns;
+       
+         while (lastRowElements !== columns) {
+            dataList.push({
+             id: `empty-${lastRowElements}`,
+             empty: true
+           });
+           lastRowElements += 1;
+         }
+         return dataList;
+       }
 
     return (
       <SafeAreaView style={styles.container}>
          <>
          <Modal
+         animationType="fade"
+         transparent={true}
+         visible={modalVerseOption}
+         onRequestClose={() => {
+            setModalVerseOption(!modalVerseOption);
+         }}>
+            <View>
+               <TouchableOpacity onPress={()=>{setModalVerseOption(false)}}>
+                  <Text>Fechar</Text>
+               </TouchableOpacity>
+            </View>
+         </Modal>
+         <Modal
          animationType="slide"
          transparent={true}
          visible={modalVisible}
          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
             setModalVisible(!modalVisible);
          }}>
          <View style={styles.centeredView}>
             <View style={styles.modalView}>
-            <View style={styles.ScrollSelector}>  
-               <>     
-                  <View>
-                     <Text>Livro</Text>
+            <View>  
+               <SafeAreaView>
+                  <View style={{flexDirection:"row", justifyContent:"space-between", marginHorizontal:10,
+               }}>
+                     <Pressable style={{backgroundColor: "#transparent", padding:"2%"}}
+                        onPress={()=>setSwitchSelector("book")}>
+                        <Text style={switchSelector=="book" ? styles.selectedCap : styles.selectorCap}>{bookT}</Text>  
+                     </Pressable>
+                     <Pressable style={{backgroundColor: "#transparent", padding:"2%"}}
+                        onPress={()=>setSwitchSelector("chapter")}>
+                        <Text style={switchSelector=="chapter" ? styles.selectedCap : styles.selectorCap}>{chapterT}</Text>
+                     </Pressable>
+                     <Pressable style={{backgroundColor: "#transparent", padding:"2%"}}
+                        onPress={()=>setSwitchSelector("versicle")}>
+                        <Text style={switchSelector=="versicle" ? styles.selectedCap : styles.selectorCap}>{verseT}</Text>
+                     </Pressable>
+                  </View>
+                  { switchSelector == "book" ? 
                      <ScrollView>
                         {_listaLivros()}
                         <Spacer/>
-                     </ScrollView>
-                  </View>   
-                  <View>
-                     <Text>Cap</Text>
-                     <ScrollView>
-                        {ListaCap()}
-                        <Spacer/>
-                     </ScrollView> 
-                  </View>    
-                  <View>
-                     <Text>Vers.</Text>
-                     <ScrollView>
-                        {ListaVers()}
-                        <Spacer/>
-                     </ScrollView> 
-                  </View>  
-               </>  
+                     </ScrollView>   
+                  : switchSelector == "chapter" ?
+                  <FlatList
+                     style={{marginTop:20}}
+                     data={createRowsChapter()}
+                     keyExtractor={item => item.id}
+                     numColumns={5}
+                     renderItem={({ item }) => {
+                        if (item.empty) {
+                           return <View style={[styles.itemGrid, styles.itemEmpty]} />;
+                        }
+                        return (
+                              <TouchableOpacity style={cap == parseInt(item.id)-1 ? styles.itemGridSelected : styles.itemGrid}>
+                                 <Text style={cap == parseInt(item.id)-1 ? styles.textItemGridSelected : styles.textItemGrid} 
+                                 onPress={() =>{
+                                    setCap(parseInt(item.id)-1),setVersicle(0), setSwitchSelector("versicle")
+                                 }}>{item.id}</Text>
+                              </TouchableOpacity>
+                        );
+                     }}
+                  /> :
+                  <FlatList
+                  style={{marginTop:20}}
+                  data={createRowsVersicle()}
+                  keyExtractor={item => item.id}
+                  numColumns={5}
+                  renderItem={({ item }) => {
+                     if (item.empty) {
+                     return <View style={[styles.itemGrid, styles.itemEmpty]} />;
+                     }
+                     return (
+                     <TouchableOpacity style={versicle == parseInt(item.id)-1 ? styles.itemGridSelected : styles.itemGrid} 
+                     >
+                        <Text style={versicle == parseInt(item.id)-1 ? styles.textItemGridSelected : styles.textItemGrid}
+                        onPress={()=>{setVersicle(parseInt(item.id)-1),scrollHandler(parseInt(item.id)-1),setSwitchSelector("book")}}
+                        >{item.id}</Text>
+                     </TouchableOpacity>
+                     );
+                  }}
+               />}
+                  </SafeAreaView>
             </View>
                <Pressable
                style={[styles.buttonModal, styles.buttonClose]}
-               onPress={() => setModalVisible(!modalVisible)}>
-               <Text style={styles.textStyle}>Fechar</Text>
+               onPress={() => {setModalVisible(!modalVisible), setSwitchSelector("book")}}>
+               <Text style={styles.textStyle}>{closeButton}</Text>
                </Pressable>
             </View>
          </View>
@@ -282,31 +399,53 @@ export default function Biblia({navigation, route}){
                showsVerticalScrollIndicator={false}
                onMomentumScrollEnd={event => setYOffSet(event.nativeEvent.contentOffset.y)}
                ref={scrollViewRef}
-               // contentOffset={{y:yOffset}}
          >
             <Text style={styles.title}>{_renderLivroCap}</Text>
             {buildVersText}
-            <AdMobBanner style={{alignSelf:'center'}}
+            <AdMobBanner style={{alignSelf:'center', marginBottom:70}}
                bannerSize="banner"
                adUnitID="ca-app-pub-3940256099942544/6300978111"
                servePersonalizedAds={false}// true or false
                onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />
          </ScrollView>
-         <View style={styles.fixToText}>
+         <View style={styles.navContainer}>
             {livro == 0 & cap == 0 ? // Se for o primeiro livro disabilite o botao voltar
-               <Button title="Anterior" disabled /> :
-            livro > 0 & cap == 0 ?
-               <Button title="Anterior" onPress={() => {_backBook()}} /> :
-               <Button title="Anterior" enabled onPress={()=> {_backChapter()}}/> 
+            <TouchableOpacity style={[{ elevation: 4, backgroundColor:"#FFF", shadowOpacity:1, borderColor:"grey", borderRadius:25, borderWidth:3}]}>
+               <Entypo name="arrow-bold-left" size={adjust(35)} color="grey" />
+            </TouchableOpacity> :
+            <TouchableOpacity style={[{ elevation: 4, backgroundColor:"#FFF", shadowOpacity:1, borderColor:"#2196F3", borderRadius:25, borderWidth:3}]}
+            onPress={() => {
+               if(livro > 0 & cap == 0){
+                  _backBook();
+               }else{
+                  _backChapter();
+               }
+               }}>
+               <Entypo name="arrow-bold-left" size={adjust(35)} color="#2196F3" />
+            </TouchableOpacity> 
             }
-            <Button title={biblia.bible[livro].name +" "+(cap+1)} onPress={() => {setModalVisible(true)}} />
+            <TouchableOpacity activeOpacity={0.9} style={styles.buttonBookNav} 
+            onPress={() => {setModalVisible(true)}}>
+               <Text style={{color:"#FFF" ,fontSize:adjust(20)}}>
+                  {biblia.bible[livro].name +" "+(cap+1)}
+               </Text>
+            </TouchableOpacity>
             {
             livro == 65 & cap == 21 ? //Caso seja o ultimo livro e ultimo cap desabilita botão Proximo
-               <Button title= "Proximo" disabled /> :
-            biblia.bible[livro].chapters.length <= cap+1 ? //Caso seja o ultimo cap do livro leva para o proximo livro
-               <Button title="Próximo" onPress={() => {_nextBook()}} /> :
-               <Button title="Próximo" onPress={() => {_nextChapter()}}/> 
+               <TouchableOpacity style={[{ elevation: 4, backgroundColor:"#FFF", shadowOpacity:1, borderColor:"grey", borderRadius:25, borderWidth:3}]}>
+                  <Entypo name="arrow-bold-right" size={adjust(35)} color="grey" />
+               </TouchableOpacity> :
+               <TouchableOpacity style={[{ elevation: 4, backgroundColor:"#FFF", shadowOpacity:1, borderColor:"#2196F3", borderRadius:25, borderWidth:3}]}
+               onPress={() => {
+                  //Caso seja o ultimo cap do livro leva para o proximo livro
+                  if(biblia.bible[livro].chapters.length <= cap+1){
+                     _nextBook();
+                  }else{
+                     _nextChapter();
+                  }}}>
+                  <Entypo name="arrow-bold-right" size={adjust(35)} color="#2196F3" />
+               </TouchableOpacity>
             }
          </View>
       </>
@@ -321,11 +460,19 @@ const styles = StyleSheet.create({
        backgroundColor: "white",
        marginTop: 2,
     },
-    fixToText: {
-      // marginBottom: 10,
-      padding:5,
+    navContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      alignSelf: 'center',
+      position: 'absolute',
+      marginBottom:10,
+      bottom:0,
+    },
+    buttonBookNav: {
+      padding:5,
+      marginHorizontal:10,
+      backgroundColor: '#2196F3',
+      elevation: 4,
+      borderRadius:10,
     },
     input:{
        tintColor: "#FFF"
@@ -343,7 +490,7 @@ const styles = StyleSheet.create({
        marginBottom: 5,
      },
      selector: {
-      fontSize: 16,
+      fontSize: adjust(16),
      //  textAlign: "justify",
       color: 'black',
       alignSelf: "center",
@@ -394,7 +541,7 @@ const styles = StyleSheet.create({
     itemSelecionado:{
       color: 'blue',
       fontWeight:"bold",
-      fontSize: 18,
+      fontSize: adjust(18),
       textAlign: "justify",
       marginLeft: 15,
       marginRight: 15,
@@ -413,18 +560,18 @@ const styles = StyleSheet.create({
     },
   centeredView: {
    flex: 1,
-   justifyContent: 'center',
+   justifyContent: 'space-between',
    alignItems: 'center',
    marginTop: 22,
  },
  modalView: {
-   margin: "8%",
+   margin: "4%",
    marginVertical: "30%",
    backgroundColor: 'white',
    borderRadius: 20,
-   paddingTop:20,
-   paddingHorizontal:"20%",
-   paddingBottom:"20%",
+   paddingTop:"5%",
+   paddingHorizontal:"5%",
+   paddingBottom:"15%",
    alignItems: 'center',
    shadowColor: '#000',
    shadowOffset: {
@@ -454,5 +601,44 @@ const styles = StyleSheet.create({
  modalText: {
    marginBottom: 15,
    textAlign: 'center',
+ },
+ itemGrid: {
+   alignItems: "center",
+   backgroundColor: "transparent",
+   borderWidth: 1,
+   borderColor: "thistle",
+   borderRadius: 30,
+   flexBasis: 0,
+   flexGrow: 1,
+   margin: 2,
+   padding: "4.6%"
+ },
+ itemGridSelected: {
+   alignItems: "center",
+   backgroundColor: "transparent",
+   borderWidth: 2,
+   borderColor: "blue",
+   borderRadius: 30,
+   flexBasis: 0,
+   flexGrow: 1,
+   margin: 2,
+   padding: "4.4%"
+ },
+ itemEmpty: {
+   borderWidth: 0,
+   backgroundColor: "transparent",
+   borderRadius: 30,
+   flexBasis: 0,
+   flexGrow: 1,
+   margin: 2,
+   padding: "4.4%"
+ },
+ textItemGrid: {
+   color: "#333333",
+   fontSize: adjust(20),
+ },
+ textItemGridSelected: {
+   color: "blue",
+   fontSize: adjust(20),
  },
  });

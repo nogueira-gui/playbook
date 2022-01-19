@@ -8,7 +8,7 @@ export default function NotasEditor({navigation}){
    const [noteText, setNoteText] = useState("");
     return (
         <View style={styles.container}>
-            <Input
+            {/* <Input
                 placeholder='Digite o título da nota'
                 autoCapitalize="none"
                 multiline
@@ -30,7 +30,7 @@ export default function NotasEditor({navigation}){
                 clearButtonMode="always"
                 value={noteText}
                 onChangeText={(txt) => setNoteText(txt)}
-            />
+            /> */}
         </View>
     )
 }
