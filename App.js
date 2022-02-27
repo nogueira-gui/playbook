@@ -7,9 +7,14 @@ import Biblia from "./src/pages/bibliaPage";
 import NotasPage from './src/pages/notas/notasPage';
 import NotasEditor from './src/pages/notas/notasEditor';
 import ConfigPage from './src/pages/conf/configPage';
+import BibleProvider from './src/context/bible';
+import NoteProvider from './src/context/noteContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
+import light from './src/style/light';
+import AppLoading from 'expo-app-loading';
+import * as Font from 'expo-font';
 
 i18n.translations = {
   en: { 
@@ -21,6 +26,7 @@ i18n.translations = {
     chapter: 'Chapter',
     verse: 'Verse', 
     close: 'Close',
+    emptyNotesMessage: 'No notes were written.',
     bibleVersions: 'Bible Versions',
     appearance: 'Appearance',
     language: 'App Language',
@@ -42,6 +48,7 @@ i18n.translations = {
     chapter: 'Capítulo',
     verse: 'Versículo', 
     close: 'Fechar',
+    emptyNotesMessage: 'Por enquanto nenhuma nota foi escrita.',
     bibleVersions: 'Traduções da Bíblia',
     appearance: 'Aparência',
     language: 'Idioma do App',
@@ -67,12 +74,29 @@ const AppStack = createStackNavigator();
 
 export default function App () {
   const [recentPageView, setRecentPageView] = React.useState(null);
+  const [fontLoaded, setFontLoaded] = React.useState(false);
   const tabBarRef = React.useRef(null);
   React.useEffect(() => {
     locateDeviceAndSetBibleVersion();
     getRecentPageView();
+    loadFonts();
   },[]);
 
+  const loadFonts = async () => {
+    await Font.loadAsync({
+      'Cormorant-Regular': require('./assets/fonts/Cormorant-Regular.ttf'),
+      'Cormorant-SemiBold': require('./assets/fonts/Cormorant-SemiBold.ttf'),
+      'Cormorant-Light': require('./assets/fonts/Cormorant-Light.ttf'),
+      'Cormorant-Medium': require('./assets/fonts/Cormorant-Medium.ttf'),
+      'MavenPro-Medium': require('./assets/fonts/static/MavenPro-Medium.ttf'),
+      'MavenPro-Bold': require('./assets/fonts/static/MavenPro-Bold.ttf'),
+      'MavenPro-Black': require('./assets/fonts/static/MavenPro-Black.ttf'),
+      'MavenPro-Regular': require('./assets/fonts/static/MavenPro-Regular.ttf'),
+      'MavenPro-SemiBold': require('./assets/fonts/static/MavenPro-SemiBold.ttf'),
+    });
+    setFontLoaded(true);
+  }
+  
   const locateDeviceAndSetBibleVersion = async () => {
     try{
       await AsyncStorage.getItem("@bibleVersion").then((value) => {
@@ -89,21 +113,25 @@ export default function App () {
   }
   const getRecentPageView  = async () => {
     try {
-        await AsyncStorage.getItem("@RecentPageView").then((value) => {
-          if(!value){
-            setRecentPageView({data:{livro:0, cap:0, yOffset:1}});
-            return;
-          }
-          setRecentPageView(JSON.parse(value));
-        });
+      await AsyncStorage.getItem("@RecentPageView").then((value) => {
+        if(!value){
+          setRecentPageView({data:{livro:0, cap:0, yOffset:1}});
+          return;
+        }
+        setRecentPageView(JSON.parse(value));
+      });
       } catch(e) {
       // error reading value
-        console.error(e);
+      console.error(e);
       }
-  };
-
-  const TabScreens = () => {
-    return(
+    };
+    
+    if(!fontLoaded){
+        return <AppLoading />;
+    }
+    
+    const TabScreens = () => {
+      return(
     <Tabs.Navigator screenOptions={({ route }) => ({
       tabBarIcon: ({ focused, color, size }) => {
         let iconName;
@@ -121,23 +149,25 @@ export default function App () {
       },
     })}
     tabBarOptions={{
-      activeTintColor: 'steelblue',
-      inactiveTintColor: 'grey',
+      style: light.tabBar,
+      activeTintColor: '#3581b8', //blue
+      inactiveTintColor: 'grey', //soft grey
     }}>
       <Tabs.Screen name={i18n.t('bible')} component={Biblia} initialParams={
-        {
-          recentPage: recentPageView,
-          previous: i18n.t('previous'),
-          next: i18n.t('next'),
-          book: i18n.t('book'),
-          chapter: i18n.t('chapter'),
-          verse: i18n.t('verse'),
-          close: i18n.t('close'),
-        }
-        }/>
+          {
+            recentPage: recentPageView,
+            previous: i18n.t('previous'),
+            next: i18n.t('next'),
+            book: i18n.t('book'),
+            chapter: i18n.t('chapter'),
+            verse: i18n.t('verse'),
+            close: i18n.t('close'),
+          }
+        }/> 
       <Tabs.Screen name={i18n.t('notes')} component={NotasPage} initialParams={
         {
-          notes: i18n.t('notes')
+          notes: i18n.t('notes'),
+          emptyNotesMessage: i18n.t('emptyNotesMessage')
         }
       } />
       <Tabs.Screen name={i18n.t('settings')} component={ConfigPage}  initialParams={
@@ -165,16 +195,19 @@ export default function App () {
         <AppStack.Screen name = "Home" component ={TabScreens} 
           options={{ headerShown: false}}
         />
-        {/* <AppStack.Screen name = "DevConteudo" component ={DevConteudo} /> */}
-        <AppStack.Screen name = {i18n.t('note')} component = {NotasPage}/>
-        <AppStack.Screen name = {i18n.t('editor')} component = {NotasEditor} />
-        <AppStack.Screen name = {i18n.t('settings')} component = {ConfigPage} options={{ title: i18n.t('settings')}} />
+        <AppStack.Screen name = 'note' title='Note' component = {NotasPage}/>
+        <AppStack.Screen name = 'editor' title="Note editor" component = {NotasEditor} />
+        <AppStack.Screen name = 'settings' component = {ConfigPage} options={{ title: i18n.t('settings')}} />
       </AppStack.Navigator>
       );
   }
   return (
         <NavigationContainer>
+          <BibleProvider>
+            <NoteProvider>
               <AppScreens/>
+            </NoteProvider>
+          </BibleProvider>
         </NavigationContainer>
   );
 }

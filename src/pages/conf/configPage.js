@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons'; 
+import adjust from '../../utils/fontAdjust';
 const appVersion = require("../../../app.json");
 
 const ConfigPage = ({navigation, route}) => {
@@ -49,28 +50,28 @@ const ConfigPage = ({navigation, route}) => {
     <SafeAreaView>
       <Text style={styles.title}>{settings}</Text>
       <TouchableOpacity style={styles.itemArea}>
-        <Text style={{fontSize:24}}>{bibleVersions}</Text>
+        <Text style={styles.itemText}>{bibleVersions}</Text>
         <AntDesign name="right" size={15} color="black" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.itemArea}>
-        <Text style={{fontSize:24}}>{appearance}</Text>
+        <Text style={styles.itemText}>{appearance}</Text>
         <AntDesign name="right" size={15} color="black" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.itemArea}>
-        <Text style={{fontSize:24}}>{language}</Text>
+        <Text style={styles.itemText}>{language}</Text>
         <AntDesign name="right" size={15} color="black" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.itemArea} 
       onPress={()=>{showAlert()}}>
-        <Text style={{fontSize:24}}>{clearData}</Text>
+        <Text style={styles.itemText}>{clearData}</Text>
         <AntDesign name="right" size={15} color="black" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.itemArea}>
-        <Text style={{fontSize:24}}>{donate}</Text>
+        <Text style={styles.itemText}>{donate}</Text>
         <AntDesign name="right" size={15} color="black" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.itemArea}>
-        <Text style={{fontSize:24}}>{about}</Text>
+        <Text style={styles.itemText}>{about}</Text>
         <AntDesign name="right" size={15} color="black" />
       </TouchableOpacity>
       <Text style={styles.appVersionStyle}>{`App Version ${appVersion.expo.version}`}</Text>
@@ -87,10 +88,15 @@ const styles = StyleSheet.create({
     padding: "5%",
   },
   title:{
-    fontSize:30,
+    fontSize:adjust(30),
+    fontFamily:'MavenPro-SemiBold',
     alignSelf: "center",
     marginBottom:"10%",
     marginTop:"10%",
+  },
+  itemText:{
+    fontSize:24,
+    fontFamily:'MavenPro-Medium',
   },
   appVersionStyle:{
     alignSelf:"center",

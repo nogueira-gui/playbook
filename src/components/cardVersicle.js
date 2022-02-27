@@ -2,98 +2,74 @@ import React,{useState,useEffect} from 'react';
 import {Text,View,StyleSheet} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useBible } from '../context/bible';
 import adjust from '../utils/fontAdjust';
 
-export default  function CardVersicle(props){
+export default function CardVersicle(props){
     const livro = props.livro;
     const cap = props.cap;
     const index = props.index;
     const item = props.item.text || props.item; 
+    const { setList, setVerseList, updateCard, setUpdateCard } = useBible();
     const [bgColor, setBgColor] = useState(null);
-    const [selectedColor, setSelectedColor] = useState("grey");
-    const [selected, setSelected] = useState(false);
-    const [tempMark, setTempMark] = useState([]);
-    const [tempBookCap, setTempBookCap] = useState(null);
+    const [pressed, setPressed] = useState(false);
+
     useEffect(() => {
-        setBgColor(null);
-        getData();
-    },[livro,cap]);
-    
-    const storeData = async (value) => {
-        try {
-            await AsyncStorage.setItem(`@Versicle-${livro}-${cap}-${index}`, value)
-        } catch (e) {
-            // saving error
+        if(!updateCard){
+            setVerseList([]); //Limpa array quando trocar de livro ou capitulo
+            setPressed(false);
+            getData();
         }
-    }
-    
+        setUpdateCard(false);
+    },[livro,cap,updateCard]);
+
     const getData = async () => {
         try {
-            AsyncStorage.getItem(`@Versicle-${livro}-${cap}-${index}`).then((value) => {
+            await AsyncStorage.getItem(`@Versicle-${livro}-${cap}-${index}`).then((value) => {
                 setBgColor(value);
             });
         } catch(e) {
             // error reading value
         }
     }
-    
-    const removeValue = async () => {
-        try {
-          await AsyncStorage.removeItem(`@Versicle-${livro}-${cap}-${index}`)
-        } catch(e) {
-          // error
-        }
-    }
 
-    const storeMarkTemp = async () => {
-        try {
-            await AsyncStorage.setItem(`@MarkTemp-${livro}-${cap}`, index)
-        } catch (e) {
-            // saving error
-        }
-    }
-    
-
-    const getMarkTemp = async () => {
-        try {
-        AsyncStorage.getItem(`@MarkTemp-${livro}-${cap}`).then((value) => {
-            console.log(value);
-            setSelected(value);
-        });
-        } catch(e) {
-        // error reading value
-        }
-    }
-
-
-    const handleMark = () => {
-        if(bgColor == null){
-            setBgColor(selectedColor);
+    const handlePressed = () => {
+        setPressed((pressed)=>!pressed);
+        if(!pressed){
+            setList(index, true);
         }
         else{
-            setBgColor(null);
-        }
-        if(bgColor == null){
-            storeMarkTemp();
-            storeData(selectedColor);
-        }else{
-            removeValue();
+            setList(index, false);
         }
     }
 
     return(
         <TouchableOpacity key={index} 
             style={
-                bgColor ? {
+                bgColor == null ?
+                pressed ? {
                 backgroundColor: "transparent",
                 borderColor: bgColor,
                 borderWidth:1,
                 opacity: 0.6,
                 } : 
-                [styles.cardNoMarked]
+                [styles.cardNoMarked] : 
+                pressed ?
+                {
+                    backgroundColor: bgColor,
+                    borderColor: "black",
+                    borderWidth:1,
+                    opacity: 0.6,
+                }  : 
+                {
+                    backgroundColor: bgColor,
+                    borderColor: "transparent",
+                    borderWidth:1,
+                    opacity: 0.6,
+                }
             }
             onPress={()=>{
-               handleMark();
+                handlePressed();
             }}>
             <View style={{flexDirection:"row"}}>
                 <View style={{alignItems:"flex-start"}}>
@@ -116,15 +92,17 @@ const styles = StyleSheet.create({
        justifyContent: "center"
     },
     vers: {
-        fontSize: adjust(20),
+        fontSize: adjust(22),
         color: 'black',
+        fontFamily:'Cormorant-Medium',
         marginTop: 15,
         marginRight:20,
         marginBottom: 5,
       },
     versIndex: {
-        fontSize: adjust(14),
+        fontSize: adjust(22),
         color: 'blue',
+        fontFamily:'Cormorant-SemiBold',
         marginTop: 15,
         marginBottom: 5,
       },

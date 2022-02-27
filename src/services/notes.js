@@ -1,4 +1,3 @@
-import React from 'react';
 import openDatabase from '../config/db';
 
 const db = openDatabase();

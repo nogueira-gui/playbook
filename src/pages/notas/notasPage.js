@@ -12,41 +12,18 @@ import {
   setTestDeviceIDAsync,
 } from 'expo-ads-admob';
 import service from '../../services/notes';
+import { useNotes } from '../../context/noteContext';
+import light from '../../style/light';
 
 export default function NotasPage({navigation, route}){
   const titlePage = route.params?.notes;
-  const [notes, setNotes] = React.useState([]);
-  const [testJson, setTestJson] = React.useState('');
-  let dataList =[{
-    id: 0,
-    ref: "gn 1:1-3",
-    title: "Creation",
-    description: "Lorem ipsum....",
-    noteDate: new Date().getTime()
-  },
-  {
-    id: 1,
-    ref: "ex 3:3",
-    title: "Test",
-    description: "Lorem ipsum 2341.............................................................Teste",
-    noteDate: parseInt(new Date().getTime())
-  },
-  ];
+  const emptyNotesMessage = route.params?.emptyNotesMessage;
+  const {notes, setNotes} = useNotes();
+  const [notesData, setNotesData] = React.useState([]);
 
-  
   React.useEffect(()=>{
     selectAll();
-  },[]);
-  
-  const createItem = (item) => {
-    service.create({ref:item.ref, title: item.title, description: item.description, date: item.date}).then((id) => {
-      selectAll();
-      console.log("Nota gravada id: ", id);
-    }).catch((e)=>{
-      Alert.alert("Erro ao gravar nota.");
-      console.error(e);
-    });
-  }
+  },[notes]);
 
   const removeItem = (id) => {
     service.remove(id);
@@ -55,31 +32,34 @@ export default function NotasPage({navigation, route}){
 
   const selectAll = () => {
     service.all()
-    .then(r => setNotes(r))
-    .catch(e => {
+    .then((result) => {
+      setNotesData(result); 
+      setNotes(result);
+    })
+    .catch(error => {
       Alert.alert("Falhou em buscar as notas"); 
-      console.error(e);
+      console.error(error);
     });
   }
 
     return (
-    <SafeAreaView>
-      <Text style={styles.title}>{titlePage}</Text>
-      {notes.length > 0 ?
+    <SafeAreaView style={styles.container}>
+      <Text style={[styles.titleTextNote, {marginBottom:10}]}>{titlePage}</Text>
+      {notesData.length > 0 ?
       <FlatList
-        style={{marginTop:10}}
-        data={notes}
+        data={notesData}
         keyExtractor={item => item.id}
         renderItem={({ item }) => {
           return (
             <>
-              <Text>{timeConverter(parseInt(item.date))}</Text>
+              <Text style={{fontFamily:'MavenPro-Regular', fontSize:adjust(15)}}>{timeConverter(parseInt(item.date))}</Text>
               <Card>
               <View style={{flexDirection:"row"}}>
                 <View style={{flex:7}}>
                   <TouchableOpacity onPress={()=> {Alert.alert("Abrir detalhes da nota")}}>
-                    <Text style={styles.titleCard}>{`${item.ref} - ${item.title}`}</Text>
-                    <Text style={styles.descriptionCard}>{item.description}</Text>
+                    <Text style={styles.titleCardNote}>{item.title}</Text>
+                    <Text style={styles.descriptionCardNote}>{item.description}</Text>
+                    <Text style={styles.versRef}>{item.ref}</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={{flex:1,alignSelf:"center"}}>
@@ -107,7 +87,9 @@ export default function NotasPage({navigation, route}){
           );
         }}
       /> :
-      <Text style={{textAlign:"center", fontSize:adjust(12)}}>Por enquanto você não tem notas salvas</Text>
+      <View View style={{flex:1, marginTop: 20}}>
+        <Text style={{textAlign:"center", fontSize:adjust(14), fontFamily:"MavenPro-Regular"}}>{emptyNotesMessage}</Text>
+      </View>
     }
       <AdMobBanner style={{alignSelf:'center'}}
         bannerSize="banner"
@@ -115,25 +97,7 @@ export default function NotasPage({navigation, route}){
         servePersonalizedAds={false}// true or false
         onDidFailToReceiveAdWithError={(err) => console.error(err)}
         />
-        <Button title={"console ALL"} onPress={()=>{ service.all().then(r => console.log(r))}}></Button>
-        <Button title={"Criar item"} onPress={()=>{ createItem({ref:"test1", title:"Titulo", description: "lore ipsum...", date: new Date().getTime()}) }}></Button>
-        <Text>{testJson}</Text>
     </SafeAreaView>
     )
 }
-const styles = StyleSheet.create({
-  title:{
-    fontSize:adjust(30),
-    alignSelf: "center",
-    marginBottom:"10%",
-    marginTop:"10%",
-  },
-  titleCard:{
-    fontSize:adjust(12),
-    fontStyle: 'italic',
-  },
-  descriptionCard:{
-    fontSize: adjust(10),
-    textAlign:"auto"
-  }
- });
+const styles = light;
