@@ -2,19 +2,21 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { FontAwesome5 } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import Biblia from "./src/pages/bibliaPage";
 import NotasPage from './src/pages/notas/notasPage';
 import NotasEditor from './src/pages/notas/notasEditor';
 import ConfigPage from './src/pages/conf/configPage';
+import ThemeProvider from './src/context/theme';
 import BibleProvider from './src/context/bible';
 import NoteProvider from './src/context/noteContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
-import light from './src/style/light';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
+import { StatusBar } from 'expo-status-bar';
+import * as NavigationBar from 'expo-navigation-bar';
 
 i18n.translations = {
   en: { 
@@ -38,6 +40,7 @@ i18n.translations = {
     done: 'Done',
     cancel: 'Cancel',
     confirm: 'Confirm',
+    languageSetting: 'en',
   },
   pt: { 
     bible: 'Biblía', 
@@ -60,6 +63,7 @@ i18n.translations = {
     done: 'Concluído',
     cancel: 'Cancelar',
     confirm: 'Confirmar',
+    languageSetting: 'pt',
   },
 };
 i18n.defaultLocale='en';
@@ -75,12 +79,40 @@ const AppStack = createStackNavigator();
 export default function App () {
   const [recentPageView, setRecentPageView] = React.useState(null);
   const [fontLoaded, setFontLoaded] = React.useState(false);
-  const tabBarRef = React.useRef(null);
+  const [modeStyle, setModeStyle] = React.useState("light");
   React.useEffect(() => {
+    setAppLanguage();
+    getTheme();
     locateDeviceAndSetBibleVersion();
     getRecentPageView();
     loadFonts();
   },[]);
+
+  const setAppLanguage = async () => {
+    AsyncStorage.getItem("@language").then((value)=>{
+      if(value){
+        i18n.locale=value;
+      }
+    });
+  }
+  
+  const getTheme = async () => {
+    await AsyncStorage.getItem("@theme").then((value) => {
+      if(value && value == "dark"){
+        setModeStyle(value);
+        NavigationBar.setBackgroundColorAsync("#121212");
+        NavigationBar.setButtonStyleAsync("light");
+      }else if(value == "light"){
+        setModeStyle(value);
+        NavigationBar.setBackgroundColorAsync("#fbfbff");
+        NavigationBar.setButtonStyleAsync("dark");
+      }else{
+        setModeStyle("light");
+        NavigationBar.setBackgroundColorAsync("#fbfbff");
+        NavigationBar.setButtonStyleAsync("dark");
+      }
+    });
+  }
 
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -93,6 +125,16 @@ export default function App () {
       'MavenPro-Black': require('./assets/fonts/static/MavenPro-Black.ttf'),
       'MavenPro-Regular': require('./assets/fonts/static/MavenPro-Regular.ttf'),
       'MavenPro-SemiBold': require('./assets/fonts/static/MavenPro-SemiBold.ttf'),
+      'Alegreya-Regular': require('./assets/fonts/static/Alegreya-Regular.ttf'),
+      'Alegreya-Medium': require('./assets/fonts/static/Alegreya-Medium.ttf'),
+      'Alegreya-SemiBold': require('./assets/fonts/static/Alegreya-SemiBold.ttf'),
+      'Alegreya-Bold': require('./assets/fonts/static/Alegreya-Bold.ttf'),
+      'Alegreya-MediumItalic': require('./assets/fonts/static/Alegreya-MediumItalic.ttf'),
+      'Cardo-Bold': require('./assets/fonts/Cardo-Bold.ttf'),
+      'Cardo-Italic': require('./assets/fonts/Cardo-Italic.ttf'),
+      'Cardo-Regular': require('./assets/fonts/Cardo-Regular.ttf'),
+      'Charm-Bold': require('./assets/fonts/Charm-Bold.ttf'),
+      'Charm-Regular': require('./assets/fonts/Charm-Regular.ttf'),
     });
     setFontLoaded(true);
   }
@@ -149,9 +191,9 @@ export default function App () {
       },
     })}
     tabBarOptions={{
-      style: light.tabBar,
-      activeTintColor: '#3581b8', //blue
-      inactiveTintColor: 'grey', //soft grey
+      style: modeStyle == "dark" ? {backgroundColor:"#121212"} : {backgroundColor:"#fbfbff"},
+      activeTintColor: modeStyle == "dark" ? "#2196F3" : '#3581b8', //blue
+      inactiveTintColor: modeStyle == "dark" ? "#fbfbff" : 'grey', //soft grey
     }}>
       <Tabs.Screen name={i18n.t('bible')} component={Biblia} initialParams={
           {
@@ -184,6 +226,7 @@ export default function App () {
             done: i18n.t('done'),
             cancel: i18n.t('cancel'),
             confirm: i18n.t('confirm'),
+            languageSetting: i18n.t('languageSetting'),
           }
         } />
     </Tabs.Navigator> 
@@ -195,19 +238,33 @@ export default function App () {
         <AppStack.Screen name = "Home" component ={TabScreens} 
           options={{ headerShown: false}}
         />
-        <AppStack.Screen name = 'note' title='Note' component = {NotasPage}/>
-        <AppStack.Screen name = 'editor' title="Note editor" component = {NotasEditor} />
-        <AppStack.Screen name = 'settings' component = {ConfigPage} options={{ title: i18n.t('settings')}} />
+        <AppStack.Screen name = 'Note' title='Note' component = {NotasPage}/>
+        <AppStack.Screen name = 'Editor' title="Note editor" component = {NotasEditor} 
+          options={{
+            headerBackImage: () => modeStyle == "dark" ? 
+            <Ionicons name="ios-chevron-back-outline" size={36} color="white" /> :
+            <Ionicons name="ios-chevron-back-outline" size={36} color="black" />,
+            headerTitleStyle:modeStyle == "dark" ? {color:"#FFF", opacity:0.86} : {color:"#000", opacity:0.86},
+            headerStyle: modeStyle == "dark" ? 
+          {
+            backgroundColor:"#121212",
+          }:{
+            backgroundColor:"#fbfbff"
+          }}}/>
+        <AppStack.Screen name = 'Settings' component = {ConfigPage} options={{ title: i18n.t('settings')}} />
       </AppStack.Navigator>
       );
   }
   return (
         <NavigationContainer>
-          <BibleProvider>
-            <NoteProvider>
-              <AppScreens/>
-            </NoteProvider>
-          </BibleProvider>
+          <ThemeProvider>
+            <BibleProvider>
+              <NoteProvider>
+                <AppScreens/>
+                <StatusBar  style= {modeStyle == 'dark' ? "light" : "dark"} />
+              </NoteProvider>
+            </BibleProvider>
+          </ThemeProvider>
         </NavigationContainer>
   );
 }

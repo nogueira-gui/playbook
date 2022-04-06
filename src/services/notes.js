@@ -8,11 +8,11 @@ const db = openDatabase();
  */
 db.transaction((tx) => {
   //<<<<<<<<<<<<<<<<<<<<<<<< USE ISSO APENAS DURANTE OS TESTES!!! >>>>>>>>>>>>>>>>>>>>>>>
-//   tx.executeSql("DROP TABLE notes;");
+  // tx.executeSql("DROP TABLE notes;");
   //<<<<<<<<<<<<<<<<<<<<<<<< USE ISSO APENAS DURANTE OS TESTES!!! >>>>>>>>>>>>>>>>>>>>>>>
 
   tx.executeSql(
-    "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT, title TEXT, description TEXT, date INTEGER);"
+    "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT, verses TEXT, title TEXT, description TEXT, date INTEGER);"
   );
 });
 
@@ -29,8 +29,8 @@ const create = (obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "INSERT INTO notes (ref, title, description, date) values (?, ?, ?, ?);",
-        [obj.ref, obj.title, obj.description, obj.date],
+        "INSERT INTO notes (ref, verses, title, description, date) values (?, ?, ?, ?, ?);",
+        [obj.ref, obj.verses, obj.title, obj.description, obj.date],
         //-----------------------
         (_, { rowsAffected, insertId }) => {
           if (rowsAffected > 0) resolve(insertId);
@@ -54,8 +54,8 @@ const update = (id, obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "UPDATE notes SET ref=?, title=?, description=?, date=? WHERE id=?;",
-        [obj.ref, obj.title, obj.description, obj.date, id],
+        "UPDATE notes SET ref=?, verses=?, title=?, description=?, date=? WHERE id=?;",
+        [obj.ref, obj.verses, obj.title, obj.description, obj.date, id],
         //-----------------------
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve(rowsAffected);
@@ -92,25 +92,17 @@ const find = (id) => {
   });
 };
 
-/**
- * BUSCA UM REGISTRO POR MEIO DA MARCA (brand)
- * - Recebe a marca do carro;
- * - Retorna uma Promise:
- *  - O resultado da Promise é um array com os objetos encontrados;
- *  - Pode retornar erro (reject) caso o ID não exista ou então caso ocorra erro no SQL;
- *  - Pode retornar um array vazio caso nenhum objeto seja encontrado.
- */
-const findByRef = (ref) => {
+const findById = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "SELECT * FROM notes WHERE ref LIKE ?;",
-        [ref],
+        "SELECT * FROM notes WHERE id = ?;",
+        [id],
         //-----------------------
         (_, { rows }) => {
           if (rows.length > 0) resolve(rows._array);
-          else reject("Obj not found: ref=" + ref); // nenhum registro encontrado
+          else reject("Obj not found: id=" + id); // nenhum registro encontrado
         },
         (_, error) => reject(error) // erro interno em tx.executeSql
       );
@@ -169,7 +161,7 @@ export default {
   create,
   update,
   find,
-  findByRef,
+  findById,
   all,
   remove,
 };

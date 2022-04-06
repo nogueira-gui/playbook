@@ -3,6 +3,7 @@ import {Text,View,StyleSheet} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useBible } from '../context/bible';
+import { useTheme } from '../context/theme';
 import adjust from '../utils/fontAdjust';
 
 export default function CardVersicle(props){
@@ -10,9 +11,16 @@ export default function CardVersicle(props){
     const cap = props.cap;
     const index = props.index;
     const item = props.item.text || props.item; 
-    const { setList, setVerseList, updateCard, setUpdateCard } = useBible();
+    const { setList, setVerseList, updateCard, setUpdateCard, fontStyle, fontSize } = useBible();
+    const { modeStyle } = useTheme();
     const [bgColor, setBgColor] = useState(null);
     const [pressed, setPressed] = useState(false);
+    const [fontText, setFontText] = useState({
+        titleBible: "Cormorant-SemiBold",
+        versIndex: "Cormorant-SemiBold",
+        vers:"Cormorant-Medium",
+        name:"Cormorant"
+    });
 
     useEffect(() => {
         if(!updateCard){
@@ -20,8 +28,13 @@ export default function CardVersicle(props){
             setPressed(false);
             getData();
         }
+        if(fontStyle){
+            setFontText(fontStyle);
+        }else{
+            getFontStyle();
+        }
         setUpdateCard(false);
-    },[livro,cap,updateCard]);
+    },[livro,cap,updateCard, fontStyle]);
 
     const getData = async () => {
         try {
@@ -30,6 +43,25 @@ export default function CardVersicle(props){
             });
         } catch(e) {
             // error reading value
+        }
+    }
+
+    const getFontStyle = async () => {
+        try{
+            await AsyncStorage.getItem("@fontStyle").then((font) => {
+                if(font){  
+                    setFontText(JSON.parse(font)); 
+                }else{
+                    setFontText({
+                        titleBible: "Cormorant-SemiBold",
+                        versIndex: "Cormorant-SemiBold",
+                        vers:"Cormorant-Medium",
+                        name:"Cormorant"
+                    });
+              }
+            })
+        }catch(e){  
+            console.error(e);
         }
     }
 
@@ -49,7 +81,7 @@ export default function CardVersicle(props){
                 bgColor == null ?
                 pressed ? {
                 backgroundColor: "transparent",
-                borderColor: bgColor,
+                borderColor: modeStyle == "dark" ?"#FFF":"black",
                 borderWidth:1,
                 opacity: 0.6,
                 } : 
@@ -57,7 +89,7 @@ export default function CardVersicle(props){
                 pressed ?
                 {
                     backgroundColor: bgColor,
-                    borderColor: "black",
+                    borderColor: modeStyle == "dark" ?"#FFF":"black",
                     borderWidth:1,
                     opacity: 0.6,
                 }  : 
@@ -71,14 +103,20 @@ export default function CardVersicle(props){
             onPress={()=>{
                 handlePressed();
             }}>
-            <View style={{flexDirection:"row"}}>
+            <View style={[{flexDirection:"row"} , modeStyle == "dark" ? {backgroundColor: "#121212"} : null]}>
                 <View style={{alignItems:"flex-start"}}>
-                    <Text selectionColor='lightgrey' style={styles.versIndex}>
+                    <Text style={[styles.versIndex,{
+                        fontSize: adjust(22)*fontSize,
+                        fontFamily: fontText.versIndex,
+                    }, modeStyle == "dark" ? {color: '#FFF', }: {color: 'blue'}]}>
                         {index+1}
                     </Text>
                 </View>
                 <View style={{alignItems:"flex-end"}}>
-                    <Text selectionColor='lightgrey' style={styles.vers}>
+                    <Text style={[styles.vers,{
+                        fontSize: adjust(22)*fontSize,
+                        fontFamily: fontText.vers,
+                    }, modeStyle == "dark" ? {color: '#FFF', }: {color: 'black'}]}>
                         {`  ${item}`}
                     </Text>
                 </View>
@@ -92,17 +130,11 @@ const styles = StyleSheet.create({
        justifyContent: "center"
     },
     vers: {
-        fontSize: adjust(22),
-        color: 'black',
-        fontFamily:'Cormorant-Medium',
         marginTop: 15,
         marginRight:20,
         marginBottom: 5,
       },
     versIndex: {
-        fontSize: adjust(22),
-        color: 'blue',
-        fontFamily:'Cormorant-SemiBold',
         marginTop: 15,
         marginBottom: 5,
       },

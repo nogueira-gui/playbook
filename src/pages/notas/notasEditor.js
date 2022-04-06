@@ -5,19 +5,21 @@ import {Input} from 'react-native-elements';
 import service from '../../services/notes';
 import Spacer from '../../components/spacer';
 import { useNotes } from '../../context/noteContext';
-import light from '../../style/light';
+import { useTheme } from '../../context/theme';
+import { useBible } from '../../context/bible';
+import dark from '../../style/dark';
 
 export default function NotasEditor({navigation, route}){
     const { height, width } = Dimensions.get('window');
     const saveText = `Save\nNote`;
-    const bible = route.params?.bible;
-    const ref = route.params?.ref;
+    const { modeStyle } = useTheme();
+    const { ref, verseRef } = useBible();
     const [noteTitle, setNoteTitle] = useState("");
     const [noteText, setNoteText] = useState("");
-    const { notes, setNotes, selectAll } = useNotes();
+    const { selectAll } = useNotes();
 
     const createNote = () => {
-        service.create({ref:ref, title: noteTitle, description: noteText, date: new Date().getTime()}).then((id) => {
+        service.create({ref:ref, verses: verseRef, title: noteTitle, description: noteText, date: new Date().getTime()}).then((id) => {
           Alert.alert("Nota criada");
           navigation.navigate('Home',{id});
           selectAll();
@@ -27,9 +29,10 @@ export default function NotasEditor({navigation, route}){
         });
       }
         return (
-            <View style={styles.container}>
-                <Text>{`Reference: ${ref}`}</Text>
-                <Text>Titulo: </Text>
+            <View style={[{flex:1},
+            modeStyle == "dark" ? {backgroundColor: "#121212"} : {backgroundColor: "#fbfbff"}]}>
+                <Text style={modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}}>{`Reference:\n ${verseRef}`}</Text>
+                <Text style={modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}}>Titulo: </Text>
                 <Input
                     placeholder='Digite o título da nota'
                     autoCapitalize="none"
@@ -45,12 +48,15 @@ export default function NotasEditor({navigation, route}){
                     onChangeText={(txt) => setNoteTitle(txt)}
                 />
                 <Spacer/>
-                <Text>Descrição: </Text>
+                <Text style={modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}}>Descrição: </Text>
                 <Input
                     placeholder='Digite aqui sua anotação'
                     autoCapitalize="none"
                     multiline
-                    inputContainerStyle={{borderBottomWidth:0,borderColor:"transparent"}}
+                    inputContainerStyle={{
+                        borderWidth:1,
+                        borderColor:"grey",
+                        borderRadius: 10}}
                     inputStyle= {{fontSize:20,flex:2}}
                     autoCorrect={true}
                     clearButtonMode="always"
@@ -58,7 +64,6 @@ export default function NotasEditor({navigation, route}){
                     onChangeText={(txt) => setNoteText(txt)}
                 />
                 <TouchableOpacity style={{
-                    // position:'absolute',
                     translateY:height-height*1,
                     translateX:width*0.7,
                     backgroundColor:"#a6a6a6",
@@ -75,4 +80,4 @@ export default function NotasEditor({navigation, route}){
             </View>
         )
 }
-const styles = light;
+const styles = dark;

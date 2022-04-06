@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
 import { ToastAndroid, Share } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import orderArray from  '../utils/orderArray';
@@ -9,6 +9,15 @@ export default function BibleProvider({ children }) {
   const [verseList, setVerseList] = useState([]);
   const [updateCard, setUpdateCard] = useState(false);
   const [showPanel, isShowPanel] = useState(false);
+  const [bibleVersion, setBibleVersion] = useState(null);
+  const [fontStyle, setFontStyle] = useState();
+  const [fontSize, setFontSize] = useState(1);
+  const [verseRef, setRefVerses] = useState("");
+  const [ref, setRef] = useState("");
+
+  useEffect(() => {
+    getFontSize();
+  },[]);
 
   const setList = (verseId, pressed) => {
     var list= verseList;
@@ -58,6 +67,21 @@ export default function BibleProvider({ children }) {
     catch(e){console.error(e)}
   }
 
+  const editNote = (chapterBibleSelected, ref) => {
+    var textClipboard = "";
+    var list = orderArray(verseList);
+    list.forEach((value)=>{
+      if(!chapterBibleSelected.verses){
+        textClipboard += `${value+1}. ${chapterBibleSelected[value]}\n`;
+      }else{
+        textClipboard += `${value+1}. ${chapterBibleSelected.verses[value].text}\n`;
+      } 
+    })
+    textClipboard += `\n${ref} :${checkVerseSequences()}`;
+    setRef(`${ref} : ${checkVerseSequences()}`);
+    setRefVerses(textClipboard);
+  }
+
   const copySelectedVerses = (chapterBibleSelected, ref) => {
     var textClipboard = "";
     var list = orderArray(verseList);
@@ -67,9 +91,6 @@ export default function BibleProvider({ children }) {
       }else{
         textClipboard += `${value+1}. ${chapterBibleSelected.verses[value].text}\n`;
       } 
-      // setVerseList([]);
-      // setUpdateCard(true);
-      // isShowPanel(false);
     })
     textClipboard += `\n${ref} :${checkVerseSequences()}`;
     Clipboard.setString(textClipboard);
@@ -88,9 +109,6 @@ export default function BibleProvider({ children }) {
   });
   textClipboard += `\n${ref} :${checkVerseSequences()}`;
   share(textClipboard);
-    // setVerseList([]);
-    // setUpdateCard(true);
-    // isShowPanel(false);
   }
 
   const share = async (text) => {
@@ -129,8 +147,23 @@ export default function BibleProvider({ children }) {
     return refPart2.substring(1);
   }
 
+  const getFontSize = async () => {
+    try{
+      await AsyncStorage.getItem("@sliderValue").then((value) => {
+        if(value){
+          setFontSize(parseFloat(value));
+        }else{
+          setFontSize(1);
+        }
+      })
+    }catch(error){
+        console.log(error);
+    }
+  }
   return (
-    <BibleContext.Provider value={{ showPanel, isShowPanel, verseList, setList, setVerseList, setCardColor, updateCard, setUpdateCard, copySelectedVerses, sharePanel }}>
+    <BibleContext.Provider value={{ showPanel, isShowPanel, verseList, setList, setVerseList, 
+    setCardColor, updateCard, setUpdateCard, copySelectedVerses, sharePanel, bibleVersion, setBibleVersion, 
+    fontStyle, setFontStyle, fontSize, setFontSize, editNote, verseRef, ref }}>
       {children}
     </BibleContext.Provider>
   );
@@ -139,6 +172,6 @@ export default function BibleProvider({ children }) {
 export function useBible() {
   const context = useContext(BibleContext);
   if (!context) throw new Error("BibleContext must be used within a BibleProvider");
-  const { showPanel, isShowPanel, verseList, setList, setVerseList, setCardColor, updateCard, setUpdateCard, copySelectedVerses, sharePanel} = context;
-  return { showPanel, isShowPanel, verseList, setList, setVerseList, setCardColor, updateCard, setUpdateCard, copySelectedVerses, sharePanel };
+  const { showPanel, isShowPanel, verseList, setList, setVerseList, setCardColor, updateCard, setUpdateCard, copySelectedVerses, sharePanel, bibleVersion, setBibleVersion, fontStyle, setFontStyle, fontSize, setFontSize, editNote, verseRef, ref } = context;
+  return { showPanel, isShowPanel, verseList, setList, setVerseList, setCardColor, updateCard, setUpdateCard, copySelectedVerses, sharePanel, bibleVersion, setBibleVersion, fontStyle, setFontStyle, fontSize, setFontSize, editNote, verseRef, ref };
 }

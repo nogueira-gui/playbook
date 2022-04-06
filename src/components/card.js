@@ -2,8 +2,9 @@ import React from 'react';
 import {StyleSheet, View} from 'react-native';
 
 export default  function Card(props){
+    const bgColor = props.backgroundColor;
     return(
-        <View style={styles.card}>
+        <View style={[styles.card, (bgColor) ? {backgroundColor:bgColor} : {backgroundColor:'#FFF'}]}>
             <View style={styles.cardContent}>
                 {props.children}
             </View>

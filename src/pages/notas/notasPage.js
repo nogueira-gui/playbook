@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,Button,Text,Alert,FlatList,StyleSheet} from 'react-native';
+import {View,Modal,Text,Alert,FlatList,Dimensions} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Card from "../../components/card";
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -12,14 +12,20 @@ import {
   setTestDeviceIDAsync,
 } from 'expo-ads-admob';
 import service from '../../services/notes';
+import NoteDetails from './noteDetails';
 import { useNotes } from '../../context/noteContext';
-import light from '../../style/light';
+import { useTheme } from '../../context/theme';
+import dark from '../../style/dark';
 
 export default function NotasPage({navigation, route}){
   const titlePage = route.params?.notes;
+  const {width} = Dimensions.get("window");
   const emptyNotesMessage = route.params?.emptyNotesMessage;
   const {notes, setNotes} = useNotes();
+  const { modeStyle } = useTheme();
+  const [modalVisible, setModalVisible] = React.useState(false);
   const [notesData, setNotesData] = React.useState([]);
+  const [noteIdPressed, setNoteIdPressed] = React.useState([]);
 
   React.useEffect(()=>{
     selectAll();
@@ -43,8 +49,18 @@ export default function NotasPage({navigation, route}){
   }
 
     return (
-    <SafeAreaView style={styles.container}>
-      <Text style={[styles.titleTextNote, {marginBottom:10}]}>{titlePage}</Text>
+    <SafeAreaView style={[styles.container,
+    modeStyle == "dark" ? {backgroundColor:"#121212"} : {backgroundColor:"#fbfbff"}]}>
+      <Modal
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => {
+           setModalVisible(!modalVisible);
+        }}>
+          <NoteDetails {...{noteIdPressed}}/>  
+      </Modal>
+      <Text style={[styles.titleTextNote, {marginBottom:10},
+      modeStyle == "dark" ? {color: "#FFF", opacity: 0.86 } : {color: "#000", opacity: 0.86} ]}>{titlePage}</Text>
       {notesData.length > 0 ?
       <FlatList
         data={notesData}
@@ -52,13 +68,18 @@ export default function NotasPage({navigation, route}){
         renderItem={({ item }) => {
           return (
             <>
-              <Text style={{fontFamily:'MavenPro-Regular', fontSize:adjust(15)}}>{timeConverter(parseInt(item.date))}</Text>
+              <Text style={[{fontFamily:'MavenPro-Regular', fontSize:adjust(15)},
+              modeStyle == "dark" ? {color: "#FFF", opacity: 0.86 } : {color: "#000", opacity: 0.86}]}>
+              {timeConverter(parseInt(item.date))}</Text>
               <Card>
               <View style={{flexDirection:"row"}}>
                 <View style={{flex:7}}>
-                  <TouchableOpacity onPress={()=> {Alert.alert("Abrir detalhes da nota")}}>
+                  <TouchableOpacity onPress={()=> {
+                    setModalVisible(true);
+                    setNoteIdPressed(item.id);
+                    }}>
                     <Text style={styles.titleCardNote}>{item.title}</Text>
-                    <Text style={styles.descriptionCardNote}>{item.description}</Text>
+                    <Text style={styles.descriptionCardNote}>{item.description.substring(0,40)}{(item.description.length > 40)&&'...'}</Text>
                     <Text style={styles.versRef}>{item.ref}</Text>
                   </TouchableOpacity>
                 </View>
@@ -100,4 +121,4 @@ export default function NotasPage({navigation, route}){
     </SafeAreaView>
     )
 }
-const styles = light;
+const styles = dark;

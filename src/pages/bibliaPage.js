@@ -4,21 +4,22 @@ import {
    AdMobInterstitial,
    setTestDeviceIDAsync,
  } from 'expo-ads-admob'
-import {Text,View,Modal,FlatList,SafeAreaView, ScrollView,StyleSheet, Pressable, Dimensions} from 'react-native';
+import {Text,View,Modal,FlatList,SafeAreaView, ScrollView, Pressable, Dimensions} from 'react-native';
 import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spacer from "../components/spacer";
 import CardVersicle from '../components/cardVersicle';
 import AnimatedBottomView from '../components/animatedBottomView';
 import adjust from '../utils/fontAdjust';
+import orderArray from  '../utils/orderArray';
 import { useBible } from '../context/bible';
+import { useTheme } from '../context/theme';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-// You can import from local files
-import DropDownPicker from 'react-native-dropdown-picker';
 //livros padroes
 const nvi = require ("../../biblia/nvi.json");
 const aa = require ("../../biblia/aa.json");
 const acf = require ("../../biblia/acf.json");
+const es_rvr = require("../../biblia/es_rvr.json");
 const kjv = [
    require ("../../biblia/kjv/Genesis.json"),
    require ("../../biblia/kjv/Exodus.json"),
@@ -88,10 +89,19 @@ const kjv = [
    require ("../../biblia/kjv/Revelation.json")
 ];
 import light from '../style/light';
+import dark from '../style/dark';
+import pink from '../style/pink';
 export default function Biblia({navigation, route}){
+   const [fontText, setFontText] = React.useState({
+      titleBible: "Cormorant-SemiBold",
+      versIndex: "Cormorant-SemiBold",
+      vers:"Cormorant-Medium",
+      name:"Cormorant"
+    });
    const [modalVisible, setModalVisible] = React.useState(false);
    const {height, width} = Dimensions.get("window");
-   const { isShowPanel, setCardColor, copySelectedVerses, sharePanel } = useBible();
+   const { isShowPanel, setCardColor, copySelectedVerses, sharePanel, bibleVersion, fontStyle, fontSize, editNote } = useBible();
+   const { modeStyle } = useTheme();
    const scrollViewRef = React.useRef(null);
    const [livro,setLivro] = React.useState(0);
    const [cap, setCap] = React.useState(0);
@@ -104,15 +114,6 @@ export default function Biblia({navigation, route}){
    const [isLoadedParams, setIsLoadedParams] = React.useState(false);
    const [dataSourceCords, setDataSourceCords] = React.useState([]);
    const [switchSelector, setSwitchSelector] = React.useState("book");
-   const [open, setOpen] = React.useState(false);
-   const [dropdownValue, setDropdownValue] = React.useState(null);
-   const [items, setItems] = React.useState([
-     {label: 'nvi', value: 'nvi'},
-     {label: 'aa', value: 'aa'},
-     {label: 'acf', value: 'acf'},
-     {label: 'kjv', value: 'kjv'},
-     {label: 'es rvr', value: 'es_rvr'},
-   ]);
    const closeButton = route.params?.close;
    const bookT = route.params?.book;
    const chapterT = route.params?.chapter;
@@ -156,6 +157,14 @@ export default function Biblia({navigation, route}){
             }
             setIsLoadedParams(true);
          }else{
+            if( bibleVersion && bibleVersion != biblia.version){
+               getBible();
+            }
+            if(fontStyle){
+               setFontText(fontStyle);
+            }else{
+               getFontStyle();
+            }
             setBookList(
                <>
                   {biblia.bible.map((item,index) => (
@@ -197,7 +206,7 @@ export default function Biblia({navigation, route}){
             }
             saveRecentPageView();
          }
-       }, [cap,livro,biblia,yOffset]);
+       }, [cap,livro,biblia,yOffset, bibleVersion, fontStyle]);
 
       const getBible = async () => {
          try{
@@ -205,27 +214,46 @@ export default function Biblia({navigation, route}){
                if(value != biblia){
                   if(value == "kjv"){
                      setBiblia({bible:kjv,version:"kjv"});
-                     setDropdownValue(value);
                      return;
                   }
                   if(value == "nvi"){
                      setBiblia({bible:nvi,version:"nvi"});
-                     setDropdownValue(value);
                      return;
                   }
                   if(value == "acf"){
                      setBiblia({bible:acf,version:"acf"});
-                     setDropdownValue(value);
                      return;
                   }
                   if(value == "aa"){
                      setBiblia({bible:aa,version:"aa"});
-                     setDropdownValue(value);
+                     return;
+                  }
+                  if(value == "es_rvr"){
+                     setBiblia({bible:es_rvr,version:"es_rvr"});
                      return;
                   }
                }
             })
          }catch(e){console.error(e);}
+      }
+
+      const getFontStyle = async () => {
+         try{
+            await AsyncStorage.getItem("@fontStyle").then((font) => {
+              if(font){  
+               setFontText(JSON.parse(font)); 
+              }else{
+                setFontText({
+                  titleBible: "Cormorant-SemiBold",
+                  versIndex: "Cormorant-SemiBold",
+                  vers:"Cormorant-Medium",
+                  name:"Cormorant"
+                });
+              }
+            })
+          }catch(e){  
+            console.error(e);
+          }
       }
 
       const saveRecentPageView = async () => {
@@ -256,7 +284,7 @@ export default function Biblia({navigation, route}){
          } else {
            console.log('Out of Max Index')
          }
-       };
+      }
 
       const createRowsChapter = () => {
          const columns = 5;
@@ -280,9 +308,9 @@ export default function Biblia({navigation, route}){
            lastRowElements += 1;
          }
          return dataList;
-       }
+      }
 
-       const createRowsVersicle = () => {
+      const createRowsVersicle = () => {
          const columns = 5;
          let dataList = [];
          if(switchSelector == "versicle"){
@@ -309,52 +337,27 @@ export default function Biblia({navigation, route}){
            lastRowElements += 1;
          }
          return dataList;
-       }
+      }
 
-       const copyToClipBoard = () => {
+      const copyToClipBoard = () => {
           copySelectedVerses(biblia.bible[livro].chapters[cap] || biblia.bible[livro].chapters[cap].verses,
             biblia.bible[livro].name +" "+(cap+1));
-       }
+      }
 
-       const dataToEditNote = () => {
-          var data = {
-             bible: biblia.bible[livro].chapters[cap] || biblia.bible[livro].chapters[cap].verses,
-             ref: `${biblia.bible[livro].name} ${cap+1}`,
-         }
-          return data;
-       }
+      const dataToEditNote = () => {
+         editNote(biblia.bible[livro].chapters[cap] || biblia.bible[livro].chapters[cap].verses, 
+            biblia.bible[livro].name +" "+(cap+1));
+         navigation.push('Editor');
+      }
 
-       const shareSelectedVerse = () => {
+      const shareSelectedVerse = () => {
          sharePanel(biblia.bible[livro].chapters[cap] || biblia.bible[livro].chapters[cap].verses, 
             biblia.bible[livro].name +" "+(cap+1));
-       }
+      }
 
-       const setSelectedVersionBible = (value) => {
-         if(value != biblia){
-            if(value == "kjv"){
-               setBiblia({bible:kjv,version:"kjv"});
-               AsyncStorage.setItem("@bibleVersion", "kjv");
-               return;
-            }
-            if(value == "nvi"){
-               setBiblia({bible:nvi,version:"nvi"});
-               AsyncStorage.setItem("@bibleVersion", "nvi");
-               return;
-            }
-            if(value == "aa"){
-               setBiblia({bible:aa,version:"aa"});
-               AsyncStorage.setItem("@bibleVersion", "aa");
-               return;
-            }
-            if(value == "acf"){
-               setBiblia({bible:acf,version:"acf"});
-               AsyncStorage.setItem("@bibleVersion", "acf");
-               return;
-            }
-         }
-       }
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={[styles.container, 
+      modeStyle == "dark" ? {backgroundColor: "#121212"} : {backgroundColor: "#fbfbff"}]}>
          <>
          <Modal
          animationType="fade"
@@ -441,25 +444,17 @@ export default function Biblia({navigation, route}){
                onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />
          </Modal>
-         <DropDownPicker
-         style={{marginTop:50}}
-         items={items}
-         defaultIndex={0}
-         open={open}
-         value={dropdownValue}
-         setOpen={setOpen}
-         onChangeValue={value => setSelectedVersionBible(value)}
-         setValue={setDropdownValue}
-         setItems={setItems}
-         containerStyle={{height: 40, width:"25%"}}
-         />
-         <ScrollView style={styles.scrollView} 
+         <ScrollView style={[styles.scrollView, modeStyle == "dark" ? {
+            backgroundColor: "#121212"
+         } : {backgroundColor: "#fbfbff"}]} 
                showsVerticalScrollIndicator={false}
                onMomentumScrollEnd={event => setYOffSet(event.nativeEvent.contentOffset.y)}
                ref={scrollViewRef}
          >
-            {/* BUILD TITLE AND VERSES */}
-            <Text style={styles.title}>{_renderLivroCap}</Text>
+            <Text style={[styles.title,{
+                     fontSize: adjust(25)*fontSize,
+                     fontFamily: fontText.titleBible,
+            },modeStyle == "dark" ? {color: '#FFF',opacity:0.86 }: {color: '#040f16'}]}>{_renderLivroCap}</Text>
             {buildVersText}
             <AdMobBanner style={{alignSelf:'center', marginBottom:70}}
                bannerSize="banner"
@@ -510,7 +505,9 @@ export default function Biblia({navigation, route}){
       </>
       <AnimatedBottomView>
                <View style={{flexDirection:"row"}}>
-                     <TouchableOpacity style={{paddingHorizontal:20}} onPress={()=>{navigation.push('editor',dataToEditNote());}}>
+                     <TouchableOpacity style={{paddingHorizontal:20}} onPress={()=>{
+                        dataToEditNote();
+                        }}>
                         <Entypo name="new-message" size={adjust(28)} color="black" />
                      </TouchableOpacity>
                      <TouchableOpacity style={{paddingHorizontal:20}} onPress={()=>{copyToClipBoard()}}>
@@ -548,4 +545,4 @@ export default function Biblia({navigation, route}){
   );
 }
 
-const styles = light;
+const styles = dark;

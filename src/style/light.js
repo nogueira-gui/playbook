@@ -23,8 +23,7 @@ export default StyleSheet.create({
     container: {
        flex: 1,
        justifyContent: "center",
-       backgroundColor: "#ebe9e9", //white-soft
-       marginTop: 2,
+       backgroundColor: "#fbfbff", //white-soft
       },
     navContainer: {
       flexDirection: 'row',
@@ -78,10 +77,7 @@ export default StyleSheet.create({
        marginTop: 15,
     },
      title: {
-      fontSize: adjust(25),
-      fontFamily:'Cormorant-SemiBold',
       textAlign: "justify",
-      color: '#040f16',
       marginLeft: 15,
       marginRight: 15,
       marginTop:60,
