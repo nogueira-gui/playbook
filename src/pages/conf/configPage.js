@@ -47,6 +47,11 @@ const ConfigPage = ({navigation, route}) => {
   const confirm = route.params?.confirm;
   const cancel = route.params?.cancel;
   const languageSetting = route.params?.languageSetting;
+  const english = route.params?.english;
+  const portuguese = route.params?.portuguese;
+  const themeText = route.params?.theme;
+  const fontStyleText = route.params?.fontStyle;
+  const fontSizeText = route.params?.fontSize;
   
   useEffect(() => {
     getVersion();
@@ -208,7 +213,7 @@ const ConfigPage = ({navigation, route}) => {
         {pressed == "appearance" ? 
         <> 
           <Card>
-            <Text style={{fontFamily:'MavenPro-SemiBold'}}>Theme </Text>
+            <Text style={{fontFamily:'MavenPro-SemiBold'}}>{themeText} </Text>
             <View style={{ marginHorizontal:'20%',justifyContent:'space-between', flexDirection:'row'}}>
               <TouchableOpacity onPress={ () => showAlert("light","Theme", "Do you want to apply this changes?") }>
                 <Card {...(modeStyle=="light") ? {backgroundColor:"#087f23"}:null}>
@@ -225,7 +230,7 @@ const ConfigPage = ({navigation, route}) => {
             </View>
           </Card>
           <Card>
-            <Text style={{fontFamily:'MavenPro-SemiBold'}}>Font Style </Text>
+            <Text style={{fontFamily:'MavenPro-SemiBold'}}>{fontStyleText}</Text>
             <View style={{ justifyContent:'space-between', flexDirection:'row'}}>
               <Pressable onPress={()=>{setFontStorage({
                 titleBible: "Cormorant-SemiBold",
@@ -274,7 +279,7 @@ const ConfigPage = ({navigation, route}) => {
             </View>
           </Card> 
           <Card>
-            <Text style={{fontFamily:'MavenPro-SemiBold'}}>Font Size </Text>
+            <Text style={{fontFamily:'MavenPro-SemiBold'}}>{fontSizeText}</Text>
             <Slider
               minimumValue={0.75}
               maximumValue={1.25}
@@ -307,7 +312,11 @@ const ConfigPage = ({navigation, route}) => {
                   fontFamily: fontText.vers, 
                   fontSize: adjust(22)*sliderValue
                   }]}>
-                  {`  In the beginning God created the heaven and the earth`}
+                  {languageButton == 'pt' ? 
+                  ` No princípio Deus criou os céus e a terra.` 
+                  :
+                  `  In the beginning God created the heaven and the earth.` 
+                  }
                 </Text>
               </View>
             </View>
@@ -325,21 +334,21 @@ const ConfigPage = ({navigation, route}) => {
               <TouchableOpacity onPress={ () => showAlert("pt","Language", "This action requires to reload this app!\n Do you want to proceed?") }>
                 <Card {...(languageButton=="pt") ? {backgroundColor:"#087f23"}:null}>
                   <Text style={[{fontFamily:'MavenPro-Medium', fontSize:adjust(15)},
-                (languageButton=="pt") ? {color:'#FFF'}:{color:'#000'}]}>Portuguese</Text>
+                (languageButton=="pt") ? {color:'#FFF'}:{color:'#000'}]}>{portuguese}</Text>
                 </Card>
               </TouchableOpacity>
               <TouchableOpacity onPress={ () => showAlert("en","Language", "This action requires to reload this app!\n Do you want to proceed?") }>
                 <Card {...(languageButton=="en") ? {backgroundColor:"#087f23"}:null}>
                   <Text style={[{fontFamily:'MavenPro-Medium',fontSize:adjust(15)},
-                (languageButton=="en") ? {color:'#FFF'}:{color:'#000'}]}>English</Text>
+                (languageButton=="en") ? {color:'#FFF'}:{color:'#000'}]}>{english}</Text>
                 </Card>
               </TouchableOpacity>
-              <TouchableOpacity onPress={ () => showAlert("es","Language", "This action requires to reload this app!\n Do you want to proceed?") }>
+              {/* <TouchableOpacity onPress={ () => showAlert("es","Language", "This action requires to reload this app!\n Do you want to proceed?") }>
                 <Card {...(languageButton=="es") ? {backgroundColor:"#087f23"}:null}>
                   <Text style={[{fontFamily:'MavenPro-Medium',fontSize:adjust(15)},
                 (languageButton=="es") ? {color:'#FFF'}:{color:'#000'}]}>Spanish</Text>
                 </Card>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </Card> 
             : null 
         }

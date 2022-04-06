@@ -12,7 +12,7 @@ db.transaction((tx) => {
   //<<<<<<<<<<<<<<<<<<<<<<<< USE ISSO APENAS DURANTE OS TESTES!!! >>>>>>>>>>>>>>>>>>>>>>>
 
   tx.executeSql(
-    "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY AUTOINCREMENT, ref TEXT, verses TEXT, title TEXT, description TEXT, date INTEGER);"
+    "CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY AUTOINCREMENT, version TEXT, ref TEXT, verses TEXT, title TEXT, description TEXT, date INTEGER);"
   );
 });
 
@@ -29,8 +29,8 @@ const create = (obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "INSERT INTO notes (ref, verses, title, description, date) values (?, ?, ?, ?, ?);",
-        [obj.ref, obj.verses, obj.title, obj.description, obj.date],
+        "INSERT INTO notes (version, ref, verses, title, description, date) values (?, ?, ?, ?, ?, ?);",
+        [obj.version, obj.ref, obj.verses, obj.title, obj.description, obj.date],
         //-----------------------
         (_, { rowsAffected, insertId }) => {
           if (rowsAffected > 0) resolve(insertId);
@@ -54,8 +54,8 @@ const update = (id, obj) => {
     db.transaction((tx) => {
       //comando SQL modificável
       tx.executeSql(
-        "UPDATE notes SET ref=?, verses=?, title=?, description=?, date=? WHERE id=?;",
-        [obj.ref, obj.verses, obj.title, obj.description, obj.date, id],
+        "UPDATE notes SET version=?, ref=?, verses=?, title=?, description=?, date=? WHERE id=?;",
+        [obj.version, obj.ref, obj.verses, obj.title, obj.description, obj.date, id],
         //-----------------------
         (_, { rowsAffected }) => {
           if (rowsAffected > 0) resolve(rowsAffected);

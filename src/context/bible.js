@@ -17,7 +17,16 @@ export default function BibleProvider({ children }) {
 
   useEffect(() => {
     getFontSize();
+    getBibleVersion();
   },[]);
+
+  const getBibleVersion = async () => {
+    await AsyncStorage.getItem("@bibleVersion").then((value)=>{
+      if(value){
+        setBibleVersion(value);
+      }
+    })
+  }
 
   const setList = (verseId, pressed) => {
     var list= verseList;

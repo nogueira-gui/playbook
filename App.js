@@ -41,6 +41,20 @@ i18n.translations = {
     cancel: 'Cancel',
     confirm: 'Confirm',
     languageSetting: 'en',
+    saveButton: 'Save',
+    title: 'Title',
+    description: 'Description',
+    reference: 'Reference',
+    english: 'English',
+    portuguese: 'Portuguese',
+    spanish: 'Spanish',
+    theme: 'Theme',
+    fontStyle: 'Font Style',
+    fontSize: 'Font Size',
+    removeNoteMessage: 'Do you want to delete this note?',
+    removeNoteTitle: 'Delete Note',
+    placeholderInputDescription: 'Type your note here',
+    placeholderInputTitle: 'Title',
   },
   pt: { 
     bible: 'Biblía', 
@@ -64,6 +78,20 @@ i18n.translations = {
     cancel: 'Cancelar',
     confirm: 'Confirmar',
     languageSetting: 'pt',
+    saveButton: 'Salvar',
+    title: 'Título',
+    description: 'Descrição',
+    reference: 'Referência',
+    english: 'Inglês',
+    portuguese: 'Português',
+    spanish: 'Espanhol',
+    theme: 'Tema',
+    fontStyle: 'Estilo',
+    fontSize: 'Tamanho',
+    removeNoteMessage: 'Você quer deletar está nota?',
+    removeNoteTitle: 'Deletar Nota',
+    placeholderInputDescription: 'Digite sua nota aqui',
+    placeholderInputTitle: 'Digite o título aqui',
   },
 };
 i18n.defaultLocale='en';
@@ -209,7 +237,11 @@ export default function App () {
       <Tabs.Screen name={i18n.t('notes')} component={NotasPage} initialParams={
         {
           notes: i18n.t('notes'),
-          emptyNotesMessage: i18n.t('emptyNotesMessage')
+          emptyNotesMessage: i18n.t('emptyNotesMessage'),
+          removeNoteMessage: i18n.t('removeNoteMessage'),
+          removeNoteTitle: i18n.t('removeNoteTitle'),
+          cancel: i18n.t('cancel'),
+          confirm: i18n.t('confirm'),
         }
       } />
       <Tabs.Screen name={i18n.t('settings')} component={ConfigPage}  initialParams={
@@ -227,6 +259,11 @@ export default function App () {
             cancel: i18n.t('cancel'),
             confirm: i18n.t('confirm'),
             languageSetting: i18n.t('languageSetting'),
+            english: i18n.t('english'),
+            portuguese: i18n.t('portuguese'),
+            theme: i18n.t('theme'),
+            fontStyle: i18n.t('fontStyle'),
+            fontSize: i18n.t('fontSize'),
           }
         } />
     </Tabs.Navigator> 
@@ -240,6 +277,14 @@ export default function App () {
         />
         <AppStack.Screen name = 'Note' title='Note' component = {NotasPage}/>
         <AppStack.Screen name = 'Editor' title="Note editor" component = {NotasEditor} 
+          initialParams={{
+            saveButton: i18n.t('saveButton'),
+            title: i18n.t('title'),
+            description: i18n.t('description'),
+            reference: i18n.t('reference'),
+            placeholderInputDescription: i18n.t('placeholderInputDescription'),
+            placeholderInputTitle: i18n.t('placeholderInputTitle'),
+          }}
           options={{
             headerBackImage: () => modeStyle == "dark" ? 
             <Ionicons name="ios-chevron-back-outline" size={36} color="white" /> :

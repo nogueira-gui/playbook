@@ -1,5 +1,10 @@
 import React,{ useState, useEffect } from 'react';
 import {View,Text,Alert,Dimensions} from 'react-native';
+import {
+    AdMobBanner,
+    AdMobInterstitial,
+    setTestDeviceIDAsync,
+  } from 'expo-ads-admob';
 import Card from '../../components/card';
 import service from '../../services/notes';
 import { useTheme } from '../../context/theme';
@@ -31,9 +36,6 @@ export default function NoteDetails(props){
 
     return (
         <View style={[{flex:1}, {
-            margin: "4%",
-            backgroundColor: '#dee2d6', //soft grey
-            borderRadius: 20,
             paddingTop:"5%",
             paddingHorizontal:"5%",
             paddingBottom:"5%",
@@ -47,18 +49,24 @@ export default function NoteDetails(props){
             elevation: 3,
           },
         modeStyle == "dark" ? {backgroundColor: "#121212"} : {backgroundColor: "#fbfbff"}]}>
-            <Card>
-                <Text style={modeStyle == "dark" ? {color:"#FFF",opacity:0.86, fontSize:adjust(24)} : {color:"#000", opacity:0.86, fontSize:adjust(24)}}>
+            <Card {... modeStyle == "dark" ? {backgroundColor:'#717171'}: null }>
+                <Text style={modeStyle == "dark" ? {color:'#FFF',opacity:0.86,textAlign:'center', fontSize:adjust(24)} : {textAlign:'center', fontSize:adjust(24)}}>
                 {noteData.title}</Text>
             </Card>
-            <Card>
-                <Text style={modeStyle == "dark" ? {color:"#FFF",opacity:0.86, fontSize:adjust(14)} : {color:"#000", opacity:0.86, fontSize:adjust(14)}}>
+            <Card {... modeStyle == "dark" ? {backgroundColor:'#717171'}: null }>
+                <Text style={modeStyle == "dark" ? {color:'#FFF',opacity:0.86,textAlign:'auto', fontSize:adjust(15)}:{textAlign:'auto', fontSize:adjust(15)}}>
                 {noteData.verses}</Text>
             </Card>
-            <Card>
-                <Text style={modeStyle == "dark" ? {color:"#FFF",opacity:0.86, fontSize:adjust(14)} : {color:"#000", opacity:0.86, fontSize:adjust(14)}}>
+            <Card {... modeStyle == "dark" ? {backgroundColor:'#717171'}: null }>
+                <Text style={modeStyle == "dark" ? {color:'#FFF',opacity:0.86,textAlign:'auto', fontSize:adjust(15)}:{textAlign:'auto', fontSize:adjust(15)}}>
                 {noteData.description}</Text>
             </Card>
+            <AdMobBanner style={{alignSelf:'center', marginTop:'30%'}}
+                        bannerSize="banner"
+                        adUnitID="ca-app-pub-3940256099942544/6300978111"
+                        servePersonalizedAds={false}// true or false
+                        onDidFailToReceiveAdWithError={(err) => console.error(err)}
+                  />
         </View>
     )
 }

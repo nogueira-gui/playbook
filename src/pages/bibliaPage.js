@@ -3,7 +3,7 @@ import {
    AdMobBanner,
    AdMobInterstitial,
    setTestDeviceIDAsync,
- } from 'expo-ads-admob'
+ } from 'expo-ads-admob';
 import {Text,View,Modal,FlatList,SafeAreaView, ScrollView, Pressable, Dimensions} from 'react-native';
 import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,7 +11,6 @@ import Spacer from "../components/spacer";
 import CardVersicle from '../components/cardVersicle';
 import AnimatedBottomView from '../components/animatedBottomView';
 import adjust from '../utils/fontAdjust';
-import orderArray from  '../utils/orderArray';
 import { useBible } from '../context/bible';
 import { useTheme } from '../context/theme';
 import { TouchableOpacity } from 'react-native-gesture-handler';

@@ -21,6 +21,10 @@ export default function NotasPage({navigation, route}){
   const titlePage = route.params?.notes;
   const {width} = Dimensions.get("window");
   const emptyNotesMessage = route.params?.emptyNotesMessage;
+  const removeNoteMessage = route.params?.removeNoteMessage;
+  const removeNoteTitle = route.params?.removeNoteTitle;
+  const confirm = route.params?.confirm;
+  const cancel = route.params?.cancel;
   const {notes, setNotes} = useNotes();
   const { modeStyle } = useTheme();
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -28,7 +32,9 @@ export default function NotasPage({navigation, route}){
   const [noteIdPressed, setNoteIdPressed] = React.useState([]);
 
   React.useEffect(()=>{
-    selectAll();
+    if(notesData != notes){
+      selectAll();
+    }
   },[notes]);
 
   const removeItem = (id) => {
@@ -54,6 +60,7 @@ export default function NotasPage({navigation, route}){
       <Modal
         animationType="fade"
         visible={modalVisible}
+        transparent={true}
         onRequestClose={() => {
            setModalVisible(!modalVisible);
         }}>
@@ -63,7 +70,15 @@ export default function NotasPage({navigation, route}){
       modeStyle == "dark" ? {color: "#FFF", opacity: 0.86 } : {color: "#000", opacity: 0.86} ]}>{titlePage}</Text>
       {notesData.length > 0 ?
       <FlatList
-        data={notesData}
+        data={notesData.sort((a , b) => {
+          if (a.id < b.id) {
+            return 1;
+          }
+          if (a.id > b.id) {
+            return -1;
+          }
+          return 0;
+        })}
         keyExtractor={item => item.id}
         renderItem={({ item }) => {
           return (
@@ -80,19 +95,19 @@ export default function NotasPage({navigation, route}){
                     }}>
                     <Text style={styles.titleCardNote}>{item.title}</Text>
                     <Text style={styles.descriptionCardNote}>{item.description.substring(0,40)}{(item.description.length > 40)&&'...'}</Text>
-                    <Text style={styles.versRef}>{item.ref}</Text>
+                    <Text style={styles.versRef}>{item.version}</Text>
                   </TouchableOpacity>
                 </View>
                 <View style={{flex:1,alignSelf:"center"}}>
                   <FontAwesome5 onPress={()=>{
-                      Alert.alert(title="Remove note",message="Deseja excluir a nota?",
+                      Alert.alert(title=removeNoteTitle,message=removeNoteMessage,
                       [
                         {
-                          text: 'cancel',
+                          text: cancel,
                           style: 'cancel',
                         },
                         {
-                          text: 'confirm',
+                          text: confirm,
                           onPress: () => removeItem(item.id),
                           style: 'confirm',
                         },
