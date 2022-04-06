@@ -94,9 +94,9 @@ export default function NotasEditor({navigation, route}){
                     }}>
                         <Text style={{paddingTop:'12.5%',fontSize:17, fontWeight:'bold', color:'white'}}>{saveText}</Text>
                     </TouchableOpacity>
-                    <AdMobBanner style={{alignSelf:'center', marginTop:'25%'}}
-                        bannerSize="banner"
-                        adUnitID="ca-app-pub-3940256099942544/6300978111"
+                    <AdMobBanner style={{alignSelf:'center', marginTop:'8%'}}
+                        bannerSize="mediumRectangle"
+                        adUnitID="ca-app-pub-8609227792865969/2991661088"
                         servePersonalizedAds={false}// true or false
                         onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />

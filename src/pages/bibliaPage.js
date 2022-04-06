@@ -438,7 +438,7 @@ export default function Biblia({navigation, route}){
          </View>
          <AdMobBanner style={{alignSelf:'center'}}
                bannerSize="banner"
-               adUnitID="ca-app-pub-3940256099942544/6300978111"
+               adUnitID="ca-app-pub-8609227792865969/8052416071"
                servePersonalizedAds={false}// true or false
                onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />
@@ -457,7 +457,7 @@ export default function Biblia({navigation, route}){
             {buildVersText}
             <AdMobBanner style={{alignSelf:'center', marginBottom:70}}
                bannerSize="banner"
-               adUnitID="ca-app-pub-3940256099942544/6300978111"
+               adUnitID="ca-app-pub-8609227792865969/6154625444"
                servePersonalizedAds={false}// true or false
                onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />

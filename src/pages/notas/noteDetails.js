@@ -62,8 +62,8 @@ export default function NoteDetails(props){
                 {noteData.description}</Text>
             </Card>
             <AdMobBanner style={{alignSelf:'center', marginTop:'30%'}}
-                        bannerSize="banner"
-                        adUnitID="ca-app-pub-3940256099942544/6300978111"
+                        bannerSize="mediumRectangle"
+                        adUnitID="ca-app-pub-8609227792865969/3462434374"
                         servePersonalizedAds={false}// true or false
                         onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />
