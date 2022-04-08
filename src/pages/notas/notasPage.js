@@ -130,7 +130,7 @@ export default function NotasPage({navigation, route}){
       <AdMobBanner style={{alignSelf:'center'}}
         bannerSize="banner"
         adUnitID="ca-app-pub-8609227792865969/2073331085"
-        servePersonalizedAds={false}// true or false
+        servePersonalizedAds={false}
         onDidFailToReceiveAdWithError={(err) => console.error(err)}
         />
     </SafeAreaView>

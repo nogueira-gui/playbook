@@ -2,11 +2,11 @@
   "expo": {
     "name": "Bíblia Fácil de Usar",
     "slug": "EasyBible",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/iconBibleBr.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splashBibleBr.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,13 +21,13 @@
     },
     "android": {
       "package": "com.simpleBooks.bibliaFacilDeUsar",
-      "versionCode": 0,
+      "versionCode": 1,
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-8609227792865969~9352018558"
       }
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/faviconBible.png"
     },
     "facebookScheme": "fb626876311314363",
     "facebookDisplayName": "Bíblia Fácil de Usar",

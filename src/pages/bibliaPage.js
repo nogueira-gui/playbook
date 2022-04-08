@@ -87,9 +87,7 @@ const kjv = [
    require ("../../biblia/kjv/Jude.json"),
    require ("../../biblia/kjv/Revelation.json")
 ];
-import light from '../style/light';
 import dark from '../style/dark';
-import pink from '../style/pink';
 export default function Biblia({navigation, route}){
    const [fontText, setFontText] = React.useState({
       titleBible: "Cormorant-SemiBold",
