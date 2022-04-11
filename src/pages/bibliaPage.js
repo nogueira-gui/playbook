@@ -19,6 +19,7 @@ const nvi = require ("../../biblia/nvi.json");
 const aa = require ("../../biblia/aa.json");
 const acf = require ("../../biblia/acf.json");
 const es_rvr = require("../../biblia/es_rvr.json");
+const en_bbe = require("../../biblia/en_bbe.json");
 const kjv = [
    require ("../../biblia/kjv/Genesis.json"),
    require ("../../biblia/kjv/Exodus.json"),
@@ -211,6 +212,10 @@ export default function Biblia({navigation, route}){
                if(value != biblia){
                   if(value == "kjv"){
                      setBiblia({bible:kjv,version:"kjv"});
+                     return;
+                  }
+                  if(value == "bbe"){
+                     setBiblia({bible:en_bbe,version:"bbe"});
                      return;
                   }
                   if(value == "nvi"){

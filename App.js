@@ -144,20 +144,15 @@ export default function App () {
 
   const loadFonts = async () => {
     await Font.loadAsync({
-      'Cormorant-Regular': require('./assets/fonts/Cormorant-Regular.ttf'),
       'Cormorant-SemiBold': require('./assets/fonts/Cormorant-SemiBold.ttf'),
-      'Cormorant-Light': require('./assets/fonts/Cormorant-Light.ttf'),
       'Cormorant-Medium': require('./assets/fonts/Cormorant-Medium.ttf'),
       'MavenPro-Medium': require('./assets/fonts/static/MavenPro-Medium.ttf'),
       'MavenPro-Bold': require('./assets/fonts/static/MavenPro-Bold.ttf'),
       'MavenPro-Black': require('./assets/fonts/static/MavenPro-Black.ttf'),
       'MavenPro-Regular': require('./assets/fonts/static/MavenPro-Regular.ttf'),
       'MavenPro-SemiBold': require('./assets/fonts/static/MavenPro-SemiBold.ttf'),
-      'Alegreya-Regular': require('./assets/fonts/static/Alegreya-Regular.ttf'),
       'Alegreya-Medium': require('./assets/fonts/static/Alegreya-Medium.ttf'),
       'Alegreya-SemiBold': require('./assets/fonts/static/Alegreya-SemiBold.ttf'),
-      'Alegreya-Bold': require('./assets/fonts/static/Alegreya-Bold.ttf'),
-      'Alegreya-MediumItalic': require('./assets/fonts/static/Alegreya-MediumItalic.ttf'),
       'Cardo-Bold': require('./assets/fonts/Cardo-Bold.ttf'),
       'Cardo-Italic': require('./assets/fonts/Cardo-Italic.ttf'),
       'Cardo-Regular': require('./assets/fonts/Cardo-Regular.ttf'),

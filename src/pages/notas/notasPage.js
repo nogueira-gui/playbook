@@ -124,7 +124,7 @@ export default function NotasPage({navigation, route}){
         }}
       /> :
       <View View style={{flex:1, marginTop: 20}}>
-        <Text style={{textAlign:"center", fontSize:adjust(14), fontFamily:"MavenPro-Regular"}}>{emptyNotesMessage}</Text>
+        <Text style={[{textAlign:"center", fontSize:adjust(14), fontFamily:"MavenPro-Regular"},modeStyle=="dark" ?{color:"white", opacity:0.86}:null]}>{emptyNotesMessage}</Text>
       </View>
     }
       <AdMobBanner style={{alignSelf:'center'}}

@@ -33,6 +33,7 @@ const ConfigPage = ({navigation, route}) => {
     {label: 'AA    pt-br', value: 'aa'},
     {label: 'ACF  pt-br', value: 'acf'},
     {label: 'KJV   en', value: 'kjv'},
+    {label: 'BBE   en', value: 'bbe'},
     {label: 'RVR   es', value: 'es_rvr'},
   ]);
   const settings = route.params?.settings;
@@ -52,6 +53,7 @@ const ConfigPage = ({navigation, route}) => {
   const themeText = route.params?.theme;
   const fontStyleText = route.params?.fontStyle;
   const fontSizeText = route.params?.fontSize;
+  const colorCheckTheme = (modeStyle == "dark") ? 'white' : 'black';
   
   useEffect(() => {
     getVersion();
@@ -191,7 +193,7 @@ const ConfigPage = ({navigation, route}) => {
         </Text>
         <TouchableOpacity onPress={()=>{handledItemPressed("bibleVersions")}} style={styles.itemArea}>
           <Text style={[styles.itemText,modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>{bibleVersions}</Text>
-          {pressed == "bibleVersions" ?<AntDesign name="down" size={15} color="black" />:<AntDesign name="right" size={15} color="black" />}
+          {pressed == "bibleVersions" ?<AntDesign name="down" size={15} color={colorCheckTheme} />:<AntDesign name="right" size={15} color={colorCheckTheme} />}
         </TouchableOpacity>
         {pressed == "bibleVersions" ?
         <DropDownPicker
@@ -208,7 +210,7 @@ const ConfigPage = ({navigation, route}) => {
           /> : null }
         <TouchableOpacity onPress={()=>{handledItemPressed("appearance")}} style={styles.itemArea}>
           <Text style={[styles.itemText,modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>{appearance}</Text>
-          {pressed == "appearance" ? <AntDesign name="down" size={15} color="black" />:<AntDesign name="right" size={15} color="black" />}
+          {pressed == "appearance" ? <AntDesign name="down" size={15} color={colorCheckTheme} />:<AntDesign name="right" size={15} color={colorCheckTheme} />}
         </TouchableOpacity>
         {pressed == "appearance" ? 
         <> 
@@ -327,7 +329,7 @@ const ConfigPage = ({navigation, route}) => {
           <Text style={[styles.itemText,modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>
             {language}</Text>
             {pressed == "language" ?
-          <AntDesign name="down" size={15} color="black" />:<AntDesign name="right" size={15} color="black" />}
+          <AntDesign name="down" size={15} color={colorCheckTheme} />:<AntDesign name="right" size={15} color={colorCheckTheme} />}
         </TouchableOpacity>
         {pressed == "language" ?
             <Card>
@@ -356,19 +358,19 @@ const ConfigPage = ({navigation, route}) => {
         onPress={()=>{showAlert("clear_data",clearData, clearDataMessageAlert)}}>
           <Text style={[styles.itemText,modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>
             {clearData}</Text>
-          <AntDesign name="right" size={15} color="black" />
+          <AntDesign name="right" size={15} color={colorCheckTheme} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.itemArea}>
           <Text style={[styles.itemText,
           modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>
             {donate}</Text>
-          <AntDesign name="right" size={15} color="black" />
+          <AntDesign name="right" size={15} color={colorCheckTheme} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.itemArea}>
           <Text style={[styles.itemText,
           modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>
             {about}</Text>
-          <AntDesign name="right" size={15} color="black" />
+          <AntDesign name="right" size={15} color={colorCheckTheme} />
         </TouchableOpacity>
         <Text style={[styles.appVersionStyle,
         modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>{`App Version ${appVersion.expo.version}`}</Text>

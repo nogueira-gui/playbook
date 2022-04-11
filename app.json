@@ -21,7 +21,7 @@
     },
     "android": {
       "package": "com.simpleBooks.bibliaFacilDeUsar",
-      "versionCode": 1,
+      "versionCode": 2,
       "config": {
         "googleMobileAdsAppId": "ca-app-pub-8609227792865969~9352018558"
       }
@@ -29,8 +29,6 @@
     "web": {
       "favicon": "./assets/faviconBible.png"
     },
-    "facebookScheme": "fb626876311314363",
-    "facebookDisplayName": "Bíblia Fácil de Usar",
     "description": "Aplicativo desenvolvido para dar suporte ao cristão.",
     "githubUrl": "https://github.com/ninjadexter/playbook"
   }
