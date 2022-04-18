@@ -103,7 +103,7 @@ export default function Biblia({navigation, route}){
    const scrollViewRef = React.useRef(null);
    const [livro,setLivro] = React.useState(0);
    const [cap, setCap] = React.useState(0);
-   const [biblia, setBiblia] = React.useState({bible:kjv,version:"kjv"});
+   const [biblia, setBiblia] = React.useState({bible:nvi,version:"nvi"});
    const [bookList, setBookList] = React.useState(null);
    const [versicle, setVersicle] = React.useState(0);
    const [_renderLivroCap, setRenderLivro] = React.useState();

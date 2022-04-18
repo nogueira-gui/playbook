@@ -128,7 +128,7 @@ export default function NotasPage({navigation, route}){
       </View>
     }
       <AdMobBanner style={{alignSelf:'center'}}
-        bannerSize="banner"
+        bannerSize="smartBannerPortrait"
         adUnitID="ca-app-pub-8609227792865969/2073331085"
         servePersonalizedAds={false}
         onDidFailToReceiveAdWithError={(err) => console.error(err)}

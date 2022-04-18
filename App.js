@@ -7,11 +7,11 @@ import Biblia from "./src/pages/bibliaPage";
 import NotasPage from './src/pages/notas/notasPage';
 import NotasEditor from './src/pages/notas/notasEditor';
 import ConfigPage from './src/pages/conf/configPage';
+import UpgradePage from './src/pages/conf/upgradePage';
 import ThemeProvider from './src/context/theme';
 import BibleProvider from './src/context/bible';
 import NoteProvider from './src/context/noteContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
@@ -35,7 +35,7 @@ i18n.translations = {
     clearData: 'Clear Data',
     clearDataMessageAlert: 'This action is irreversible, do you really want to delete the data from this application?',
     clearMessageDone: 'Data has been deleted',
-    donate: 'Donate',
+    donate: 'Upgrade App',
     about: 'About',
     done: 'Done',
     cancel: 'Cancel',
@@ -72,7 +72,7 @@ i18n.translations = {
     clearData: 'Apagar dados',
     clearDataMessageAlert: 'Está ação é irreversivel, você quer mesmo excluir os dados deste aplicativo?',
     clearMessageDone: 'Dados removidos',
-    donate: 'Doe',
+    donate: 'Melhorar aplicativo',
     about: 'Sobre',
     done: 'Concluído',
     cancel: 'Cancelar',
@@ -95,9 +95,7 @@ i18n.translations = {
   },
 };
 i18n.defaultLocale='en';
-// Set the locale once at the beginning of your app.
-const deviceLocate = Localization.locale;
-i18n.locale = deviceLocate;
+i18n.locale = 'pt';
 // When a value is missing from a language it'll fallback to another language with the key present.
 i18n.fallbacks = true;
 
@@ -111,7 +109,6 @@ export default function App () {
   React.useEffect(() => {
     setAppLanguage();
     getTheme();
-    locateDeviceAndSetBibleVersion();
     getRecentPageView();
     loadFonts();
   },[]);
@@ -162,20 +159,6 @@ export default function App () {
     setFontLoaded(true);
   }
   
-  const locateDeviceAndSetBibleVersion = async () => {
-    try{
-      await AsyncStorage.getItem("@bibleVersion").then((value) => {
-        if(!value && deviceLocate =="pt-BR"){
-          AsyncStorage.setItem("@bibleVersion", "nvi");
-          return;
-        }
-        if(!value && deviceLocate == "en-US"){
-          AsyncStorage.setItem("@bibleVersion", "kjv");
-          return;
-        }
-      })
-    }catch(e){console.error(e);}
-  }
   const getRecentPageView  = async () => {
     try {
       await AsyncStorage.getItem("@RecentPageView").then((value) => {
@@ -292,6 +275,18 @@ export default function App () {
             backgroundColor:"#fbfbff"
           }}}/>
         <AppStack.Screen name = 'Settings' component = {ConfigPage} options={{ title: i18n.t('settings')}} />
+        <AppStack.Screen name = 'Upgrade' component = {UpgradePage} options={{ 
+          title: 'Upgrade',
+          headerBackImage: () => modeStyle == "dark" ? 
+          <Ionicons name="ios-chevron-back-outline" size={36} color="white" /> :
+          <Ionicons name="ios-chevron-back-outline" size={36} color="black" />,
+          headerTitleStyle:modeStyle == "dark" ? {color:"#FFF", opacity:0.86} : {color:"#000", opacity:0.86},
+          headerStyle: modeStyle == "dark" ? 
+        {
+          backgroundColor:"#121212",
+        }:{
+          backgroundColor:"#fbfbff"
+        }}} />
       </AppStack.Navigator>
       );
   }

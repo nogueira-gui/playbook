@@ -11,6 +11,7 @@ import adjust from '../../utils/fontAdjust';
 import { ScrollView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
+import * as WebBrowser from 'expo-web-browser';
 const appVersion = require("../../../app.json");
 
 const ConfigPage = ({navigation, route}) => {
@@ -62,6 +63,10 @@ const ConfigPage = ({navigation, route}) => {
     getLanguage();
   },[]);
   
+  const _handlePressButtonAsync = async () => {
+    await WebBrowser.openBrowserAsync('https://easybiblenogueiras.blogspot.com/2022/04/privacy-policy-guilherme-nogueira-silva.html');
+  };
+
   const getFont = async () => {
     try{
       await AsyncStorage.getItem("@fontStyle").then((font) => {
@@ -345,12 +350,6 @@ const ConfigPage = ({navigation, route}) => {
                 (languageButton=="en") ? {color:'#FFF'}:{color:'#000'}]}>{english}</Text>
                 </Card>
               </TouchableOpacity>
-              {/* <TouchableOpacity onPress={ () => showAlert("es","Language", "This action requires to reload this app!\n Do you want to proceed?") }>
-                <Card {...(languageButton=="es") ? {backgroundColor:"#087f23"}:null}>
-                  <Text style={[{fontFamily:'MavenPro-Medium',fontSize:adjust(15)},
-                (languageButton=="es") ? {color:'#FFF'}:{color:'#000'}]}>Spanish</Text>
-                </Card>
-              </TouchableOpacity> */}
             </Card> 
             : null 
         }
@@ -360,13 +359,13 @@ const ConfigPage = ({navigation, route}) => {
             {clearData}</Text>
           <AntDesign name="right" size={15} color={colorCheckTheme} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.itemArea}>
+        <TouchableOpacity onPress={()=>{navigation.push("Upgrade")}} style={styles.itemArea}>
           <Text style={[styles.itemText,
           modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>
             {donate}</Text>
           <AntDesign name="right" size={15} color={colorCheckTheme} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.itemArea}>
+        <TouchableOpacity onPress={() => {_handlePressButtonAsync()}} style={styles.itemArea}>
           <Text style={[styles.itemText,
           modeStyle == "dark" ? {color:"#FFF",opacity:0.86} : {color:"#000", opacity:0.86}]}>
             {about}</Text>
