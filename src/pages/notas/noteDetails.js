@@ -1,21 +1,20 @@
 import React,{ useState, useEffect } from 'react';
-import {View,Text,Alert,Dimensions} from 'react-native';
+import {View,Text,Alert} from 'react-native';
 import {
-    AdMobBanner,
-    AdMobInterstitial,
-    setTestDeviceIDAsync,
+    AdMobBanner
   } from 'expo-ads-admob';
 import Card from '../../components/card';
 import service from '../../services/notes';
 import { useTheme } from '../../context/theme';
 import dark from '../../style/dark';
 import adjust from '../../utils/fontAdjust';
+import { useAdControl } from '../../context/admobControl';
 
 export default function NoteDetails(props){
-    const { height, width } = Dimensions.get('window');
     const noteId = props.noteIdPressed;
     const { modeStyle } = useTheme();
     const [noteData, setNoteData] = useState({});
+    const { tempPremium, premium } = useAdControl(); 
 
     useEffect(()=>{
         selectById();
@@ -61,12 +60,14 @@ export default function NoteDetails(props){
                 <Text style={modeStyle == "dark" ? {color:'#FFF',opacity:0.86,textAlign:'auto', fontSize:adjust(15)}:{textAlign:'auto', fontSize:adjust(15)}}>
                 {noteData.description}</Text>
             </Card>
+            {tempPremium > new Date().getTime() || premium ? null :
             <AdMobBanner style={{alignSelf:'center', marginTop:'30%'}}
                         bannerSize="mediumRectangle"
                         adUnitID="ca-app-pub-8609227792865969/3462434374"
                         servePersonalizedAds={false}// true or false
                         onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />
+            }
         </View>
     )
 }

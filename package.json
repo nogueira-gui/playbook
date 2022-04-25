@@ -40,9 +40,10 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "babel-preset-expo": "9.0.2"
+    "babel-preset-expo": "9.0.2",
+    "typescript": "~4.3.5"
   },
   "private": true,
   "name": "ePlayBook",
-  "version": "1.0.0"
+  "version": "1.0.7"
 }

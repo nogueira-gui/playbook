@@ -10,4 +10,6 @@ const timeConverter = (timestamp) => {
     var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min;
     return time;
   }
+  
   export default timeConverter;
+

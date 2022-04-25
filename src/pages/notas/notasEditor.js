@@ -1,9 +1,7 @@
 import React,{ useState } from 'react';
 import {View,Text,Alert,Dimensions} from 'react-native';
 import {
-    AdMobBanner,
-    AdMobInterstitial,
-    setTestDeviceIDAsync,
+    AdMobBanner
   } from 'expo-ads-admob';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import {Input} from 'react-native-elements';
@@ -13,6 +11,7 @@ import { useNotes } from '../../context/noteContext';
 import { useTheme } from '../../context/theme';
 import { useBible } from '../../context/bible';
 import dark from '../../style/dark';
+import { useAdControl } from '../../context/admobControl';
 
 export default function NotasEditor({navigation, route}){
     const { height, width } = Dimensions.get('window');
@@ -24,6 +23,7 @@ export default function NotasEditor({navigation, route}){
     const placeholderInputTitle = route.params.placeholderInputTitle;
     const { modeStyle } = useTheme();
     const { ref, verseRef, bibleVersion } = useBible();
+    const { tempPremium, premium} = useAdControl();
     const [noteTitle, setNoteTitle] = useState(ref);
     const [noteText, setNoteText] = useState("");
     const { selectAll } = useNotes();
@@ -94,12 +94,13 @@ export default function NotasEditor({navigation, route}){
                     }}>
                         <Text style={{paddingTop:'12.5%',fontSize:17, fontWeight:'bold', color:'white'}}>{saveText}</Text>
                     </TouchableOpacity>
+                    { tempPremium > new Date().getTime() || premium ? null :
                     <AdMobBanner style={{alignSelf:'center', marginTop:'8%'}}
                         bannerSize="mediumRectangle"
                         adUnitID="ca-app-pub-8609227792865969/2991661088"
                         servePersonalizedAds={false}// true or false
                         onDidFailToReceiveAdWithError={(err) => console.error(err)}
-                  />
+                    />}
                 </ScrollView>
             </View>
         )

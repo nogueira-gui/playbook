@@ -1,31 +1,87 @@
-import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, Alert, TouchableOpacity, SafeAreaView, Pressable } from 'react-native';
+import React from 'react';
+import { Text, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
 import {
   AdMobBanner,
-  AdMobInterstitial,
-  setTestDeviceIDAsync,
+  AdMobRewarded
 } from 'expo-ads-admob';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome,FontAwesome5,Entypo } from '@expo/vector-icons'; 
 import Card from '../../components/card';
 import adjust from '../../utils/fontAdjust';
 import { useTheme } from '../../context/theme';
+import { useAdControl } from '../../context/admobControl';
 import { StatusBar } from 'expo-status-bar';
-import * as Updates from 'expo-updates';
-import Spacer from '../../components/spacer';
+import MonetizationCtrl from "../../services/monetization";
 
-const UpgradePage = ({navigation, route}) => {
+const UpgradePage = () => {
   const { modeStyle } = useTheme(); 
-  const [fontText, setFontText] = React.useState({
-    titleBible: "Cormorant-SemiBold",
-    versIndex: "Cormorant-SemiBold",
-    vers:"Cormorant-Medium",
-    name:"Cormorant"
+  const { premium, tempPremium,setTempPremium, setPremium } = useAdControl();
+  const [ showButtonTemp, setShowButtonTemp] = React.useState(false);
+  const [isUpgradeBtnLoading,setIsUpgradeBtnLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    return function cleanup() {
+      AdMobRewarded.removeAllListeners();
+    };
+  },[]);
+
+  async function handlePurchase() {
+    setIsUpgradeBtnLoading(true);
+
+    try {
+      const result = await MonetizationCtrl.I.buyUpgrade();
+      if (result) {
+        setPremium(true);
+        Alert.alert(
+          title="Upgrade app",
+          message="Obrigado por utilizar nosso aplicativo!\n Esperamos garantir a melhor experiência para você!",
+        );
+      }
+    } catch (e) {
+      Alert.alert("Ocorreu um erro", JSON.stringify(e));
+    }
+
+    setIsUpgradeBtnLoading(false);
+  }
+
+  let loadAd = async () => {
+    await AdMobRewarded.setAdUnitID("ca-app-pub-8609227792865969/2076908933");
+    if(!showButtonTemp && tempPremium <= 0){
+      await AdMobRewarded.requestAdAsync().then(()=>{
+        setShowButtonTemp(true);
+      }).catch(()=>{setShowButtonTemp(true)});    
+    }
+  }
+  
+  AdMobRewarded.addEventListener("rewardedVideoUserDidEarnReward",(reward)=>{
+    console.log("userDidEarnReward");
+    if(reward.type == "removeAD"){
+      removeADTemp();
+    }
+    // loadAd();
   });
   
-  useEffect(() => {
-  },[]);
+  const removeADTemp = async () => {
+    let tomorrow = new Date().getTime()+(24 * 60 * 60 * 1000);
+    setTempPremium(tomorrow);
+    await AsyncStorage.setItem("@blockAdTemp", tomorrow.toString());
+  }
+
+  AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad",()=>{
+    console.log("didFailtoLoad");
+    if(!showButtonTemp){
+      loadAd();
+    }
+  });
   
+  AdMobRewarded.addEventListener("rewardedVideoDidDismiss",()=>{
+    console.log("videoDidDismiss");
+    if(!showButtonTemp){
+      loadAd();
+    }
+  });
+
+  loadAd();
 
   return (
     <SafeAreaView style={modeStyle == "dark" ? {
@@ -38,9 +94,16 @@ const UpgradePage = ({navigation, route}) => {
       alignContent:'center'
     }}>
       <StatusBar style= {modeStyle=='dark' ? "light" : "dark"} />
+      {
+      premium ? 
+        <Card>
+          <Text style={{fontSize: adjust(20), textAlign:'center'}}>{`Você já possui acesso PREMIUM  `} 
+          <FontAwesome name="diamond" size={adjust(20)} color="black" /></Text> 
+        </Card> :
+      <>
       <Card>
         <Text style={{fontSize:adjust(14)}}><FontAwesome name="diamond" size={adjust(20)} color="black" />Aplicativo sem propagandas por tempo ilimitado</Text>
-        <Text style={{fontSize:adjust(14)}}><Entypo name="heart" size={adjust(20)} color="red" />Doar para melhorar a qualidade do aplicativo</Text>
+        <Text style={{fontSize:adjust(14)}}><Entypo name="heart" size={adjust(20)} color="red" />Apoiar desenvolvedores</Text>
         <Text style={{fontSize:adjust(12), textAlign:'justify'}}><FontAwesome5 name="hand-holding-usd" size={adjust(20)} color="black" />Aplicamos a política de reembolso de 3 dias, então sinta-se à vontade para experimentar tudo</Text>
       </Card>
       <Card>
@@ -50,7 +113,11 @@ const UpgradePage = ({navigation, route}) => {
                         backgroundColor:"#7db32e",
                         borderRadius:30,
                         alignItems:'center',
-                    }} >
+                    }} onPress={()=>{
+                      if(!isUpgradeBtnLoading){
+                        handlePurchase();
+                      }
+                      }} >
           <Text style={{paddingVertical:'5%',fontSize:adjust(20), fontWeight:'bold', color:'white'}}>{`Melhorar aplicativo (Doar)`}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{
@@ -63,16 +130,23 @@ const UpgradePage = ({navigation, route}) => {
           <Text style={{fontSize:adjust(14), fontWeight:'normal', color:'black'}}>{`Já fez essa operação antes?`}</Text>
         </TouchableOpacity>
       </Card>
+      <>
       <Card>
-        <TouchableOpacity style={{
+        {
+        showButtonTemp ?
+        <TouchableOpacity 
+        onPress={()=>{AdMobRewarded.showAdAsync()}}
+        style={{
                         backgroundColor:"#7db32e",
                         borderRadius:20,
                         paddingVertical: 10,
                         marginHorizontal:'10%',
                         alignItems:'center'}}>
-                          <Text style={{textAlignVertical:'center',textAlign:'center',color:'white', opacity:0.86}}><Entypo name="video" size={adjust(24)} color="white" /> Remover propagangas por 7 dias</Text>
-        </TouchableOpacity>
+                          <Text style={{textAlignVertical:'center',textAlign:'center',color:'white', opacity:0.86}}><Entypo name="video" size={adjust(24)} color="white" /> Remover propagangas por 24 horas</Text>
+        </TouchableOpacity> : null
+        }
       </Card>
+      {tempPremium > new Date().getTime() || premium ? null :
       <Card>
         <AdMobBanner style={{alignSelf:'center'}}
           bannerSize="mediumRectangle"
@@ -81,52 +155,12 @@ const UpgradePage = ({navigation, route}) => {
           onDidFailToReceiveAdWithError={(err) => console.error(err)}
           />
       </Card>
+      }
+      </>
+      </>
+    }
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  itemArea: {
-    alignItems: "flex-start",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "transparent",
-    padding: "5%",
-  },
-  title:{
-    fontSize:adjust(30),
-    fontFamily:'MavenPro-SemiBold',
-    alignSelf: "center",
-    marginBottom:"10%",
-    marginTop:"10%",
-  },
-  itemText:{
-    fontSize:24,
-    fontFamily:'MavenPro-Medium',
-  },
-  appVersionStyle:{
-    alignSelf:"center",
-  },
-  vers: {
-    color: 'black',
-    marginTop: 15,
-    marginRight:20,
-    marginBottom: 5,
-  },
-  versIndex: {
-    color: 'blue',
-    marginTop: 15,
-    marginBottom: 5,
-  },
-  titleBible: {
-    textAlign: "justify",
-    color: '#040f16',
-    marginLeft: 15,
-    marginRight: 15,
-    marginTop:10,
-    alignSelf: "center",
-    
-  },
-});
 
 export default UpgradePage;

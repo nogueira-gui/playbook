@@ -15,6 +15,7 @@ import service from '../../services/notes';
 import NoteDetails from './noteDetails';
 import { useNotes } from '../../context/noteContext';
 import { useTheme } from '../../context/theme';
+import { useAdControl } from '../../context/admobControl';
 import dark from '../../style/dark';
 
 export default function NotasPage({navigation, route}){
@@ -27,6 +28,7 @@ export default function NotasPage({navigation, route}){
   const cancel = route.params?.cancel;
   const {notes, setNotes} = useNotes();
   const { modeStyle } = useTheme();
+  const { tempPremium, premium } = useAdControl();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [notesData, setNotesData] = React.useState([]);
   const [noteIdPressed, setNoteIdPressed] = React.useState([]);
@@ -127,12 +129,14 @@ export default function NotasPage({navigation, route}){
         <Text style={[{textAlign:"center", fontSize:adjust(14), fontFamily:"MavenPro-Regular"},modeStyle=="dark" ?{color:"white", opacity:0.86}:null]}>{emptyNotesMessage}</Text>
       </View>
     }
+    { tempPremium > new Date().getTime() || premium ? null :
       <AdMobBanner style={{alignSelf:'center'}}
         bannerSize="smartBannerPortrait"
         adUnitID="ca-app-pub-8609227792865969/2073331085"
         servePersonalizedAds={false}
         onDidFailToReceiveAdWithError={(err) => console.error(err)}
         />
+    }
     </SafeAreaView>
     )
 }

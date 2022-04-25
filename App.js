@@ -11,6 +11,7 @@ import UpgradePage from './src/pages/conf/upgradePage';
 import ThemeProvider from './src/context/theme';
 import BibleProvider from './src/context/bible';
 import NoteProvider from './src/context/noteContext';
+import AdProvider from './src/context/admobControl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18n-js';
 import AppLoading from 'expo-app-loading';
@@ -292,14 +293,16 @@ export default function App () {
   }
   return (
         <NavigationContainer>
-          <ThemeProvider>
-            <BibleProvider>
-              <NoteProvider>
-                <AppScreens/>
-                <StatusBar  style= {modeStyle == 'dark' ? "light" : "dark"} />
-              </NoteProvider>
-            </BibleProvider>
-          </ThemeProvider>
+          <AdProvider>
+            <ThemeProvider>
+              <BibleProvider>
+                <NoteProvider>
+                  <AppScreens/>
+                  <StatusBar  style= {modeStyle == 'dark' ? "light" : "dark"} />
+                </NoteProvider>
+              </BibleProvider>
+            </ThemeProvider>
+          </AdProvider>
         </NavigationContainer>
   );
 }

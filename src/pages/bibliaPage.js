@@ -5,7 +5,7 @@ import {
    setTestDeviceIDAsync,
  } from 'expo-ads-admob';
 import {Text,View,Modal,FlatList,SafeAreaView, ScrollView, Pressable, Dimensions} from 'react-native';
-import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
+import { Entypo, Feather, Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spacer from "../components/spacer";
 import CardVersicle from '../components/cardVersicle';
@@ -89,6 +89,7 @@ const kjv = [
    require ("../../biblia/kjv/Revelation.json")
 ];
 import dark from '../style/dark';
+import { useAdControl } from '../context/admobControl';
 export default function Biblia({navigation, route}){
    const [fontText, setFontText] = React.useState({
       titleBible: "Cormorant-SemiBold",
@@ -100,6 +101,7 @@ export default function Biblia({navigation, route}){
    const {height, width} = Dimensions.get("window");
    const { isShowPanel, setCardColor, copySelectedVerses, sharePanel, bibleVersion, fontStyle, fontSize, editNote } = useBible();
    const { modeStyle } = useTheme();
+   const { premium, tempPremium } = useAdControl();
    const scrollViewRef = React.useRef(null);
    const [livro,setLivro] = React.useState(0);
    const [cap, setCap] = React.useState(0);
@@ -439,12 +441,14 @@ export default function Biblia({navigation, route}){
                </Pressable>
             </View>
          </View>
+         { tempPremium > new Date().getTime() || premium ? null :
          <AdMobBanner style={{alignSelf:'center'}}
                bannerSize="banner"
                adUnitID="ca-app-pub-8609227792865969/8052416071"
                servePersonalizedAds={false}// true or false
                onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />
+         }
          </Modal>
          <ScrollView style={[styles.scrollView, modeStyle == "dark" ? {
             backgroundColor: "#121212"
@@ -453,17 +457,32 @@ export default function Biblia({navigation, route}){
                onMomentumScrollEnd={event => setYOffSet(event.nativeEvent.contentOffset.y)}
                ref={scrollViewRef}
          >
+            {premium ? null :
+            <Pressable 
+            onPress={()=>{navigation.push("Upgrade")}}
+            style={{position:'absolute',transform: [
+                    {
+                        translateY: 70
+                    },{translateX:width-60}],
+                  }}>
+               {modeStyle == "dark" ?
+               <FontAwesome name="diamond" size={adjust(25)} color="white" /> 
+               : <FontAwesome name="diamond" size={adjust(25)} color="black" />}
+            </Pressable>
+            }
             <Text style={[styles.title,{
                      fontSize: adjust(25)*fontSize,
                      fontFamily: fontText.titleBible,
             },modeStyle == "dark" ? {color: '#FFF',opacity:0.86 }: {color: '#040f16'}]}>{_renderLivroCap}</Text>
             {buildVersText}
+            { tempPremium > new Date().getTime() || premium ? <><Spacer/><Spacer/><Spacer/></> :
             <AdMobBanner style={{alignSelf:'center', marginBottom:70}}
                bannerSize="banner"
                adUnitID="ca-app-pub-8609227792865969/6154625444"
                servePersonalizedAds={false}// true or false
                onDidFailToReceiveAdWithError={(err) => console.error(err)}
                   />
+            }
          </ScrollView>
          <View style={styles.navContainer}>
             { livro == 0 & cap == 0 ? // Se for o primeiro livro disabilite o botao voltar
