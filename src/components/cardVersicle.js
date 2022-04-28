@@ -28,11 +28,6 @@ export default function CardVersicle(props){
             setPressed(false);
             getData();
         }
-        if(fontStyle){
-            setFontText(fontStyle);
-        }else{
-            getFontStyle();
-        }
         setUpdateCard(false);
     },[livro,cap,updateCard, fontStyle]);
 
@@ -46,24 +41,6 @@ export default function CardVersicle(props){
         }
     }
 
-    const getFontStyle = async () => {
-        try{
-            await AsyncStorage.getItem("@fontStyle").then((font) => {
-                if(font){  
-                    setFontText(JSON.parse(font)); 
-                }else{
-                    setFontText({
-                        titleBible: "Cormorant-SemiBold",
-                        versIndex: "Cormorant-SemiBold",
-                        vers:"Cormorant-Medium",
-                        name:"Cormorant"
-                    });
-              }
-            })
-        }catch(e){  
-            console.error(e);
-        }
-    }
 
     const handlePressed = () => {
         setPressed((pressed)=>!pressed);
@@ -107,7 +84,7 @@ export default function CardVersicle(props){
                 <View style={{alignItems:"flex-start"}}>
                     <Text style={[styles.versIndex,{
                         fontSize: adjust(22)*fontSize,
-                        fontFamily: fontText.versIndex,
+                        fontFamily: fontStyle.versIndex,
                     }, modeStyle == "dark" ? {color: '#FFF', }: {color: 'blue'}]}>
                         {index+1}
                     </Text>
@@ -115,7 +92,7 @@ export default function CardVersicle(props){
                 <View style={{alignItems:"flex-end"}}>
                     <Text style={[styles.vers,{
                         fontSize: adjust(22)*fontSize,
-                        fontFamily: fontText.vers,
+                        fontFamily: fontStyle.vers,
                     }, modeStyle == "dark" ? {color: '#FFF', }: {color: 'black'}]}>
                         {`  ${item}`}
                     </Text>

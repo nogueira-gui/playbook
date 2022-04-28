@@ -124,10 +124,9 @@ const ConfigPage = ({navigation, route}) => {
   }
 
   const clearAllData = async () => {
-    AsyncStorage.getAllKeys()
-        .then(keys => AsyncStorage.multiRemove(keys))
-        .then(() => alert(clearMessageDone));
-    await Updates.reloadAsync();
+    const keys = await AsyncStorage.getAllKeys();
+    await AsyncStorage.multiRemove(keys)
+      .then(() => alert(clearMessageDone));
   }
 
   const showAlert = (type, title, message) =>
@@ -151,7 +150,7 @@ const ConfigPage = ({navigation, route}) => {
   );
 
   const handledAlertSubmit = async (type) => {
-    if(type === "clear_data"){
+    if(type == "clear_data"){
       clearAllData();
     }else if(type == "light" || type == "dark"){
       setModeStyle(type);

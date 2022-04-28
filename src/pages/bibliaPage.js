@@ -1,8 +1,6 @@
 import React,{useEffect} from 'react';
 import {
-   AdMobBanner,
-   AdMobInterstitial,
-   setTestDeviceIDAsync,
+   AdMobBanner
  } from 'expo-ads-admob';
 import {Text,View,Modal,FlatList,SafeAreaView, ScrollView, Pressable, Dimensions} from 'react-native';
 import { Entypo, Feather, Ionicons, FontAwesome } from '@expo/vector-icons';
@@ -91,14 +89,8 @@ const kjv = [
 import dark from '../style/dark';
 import { useAdControl } from '../context/admobControl';
 export default function Biblia({navigation, route}){
-   const [fontText, setFontText] = React.useState({
-      titleBible: "Cormorant-SemiBold",
-      versIndex: "Cormorant-SemiBold",
-      vers:"Cormorant-Medium",
-      name:"Cormorant"
-    });
    const [modalVisible, setModalVisible] = React.useState(false);
-   const {height, width} = Dimensions.get("window");
+   const {width} = Dimensions.get("window");
    const { isShowPanel, setCardColor, copySelectedVerses, sharePanel, bibleVersion, fontStyle, fontSize, editNote } = useBible();
    const { modeStyle } = useTheme();
    const { premium, tempPremium } = useAdControl();
@@ -120,22 +112,22 @@ export default function Biblia({navigation, route}){
    const verseT = route.params?.verse;
 
    const _nextChapter = () => {
-      setCap(cap+1)
-      return  
+      setCap(cap+1);
+      scrollViewRef.current.scrollTo({y:0.1, animated:false});
    }   
    const _backChapter = () => {
-      setCap(cap-1)
-      return  
+      setCap(cap-1);
+      scrollViewRef.current.scrollTo({y:0.1, animated:false});
    }
    const _nextBook = () => {
-      setLivro(livro+1)
-      setCap(0)
-      return
+      setLivro(livro+1);
+      setCap(0);
+      scrollViewRef.current.scrollTo({y:0.1, animated:false});
    }
    const _backBook = () => {
-      setLivro(livro-1)
-      setCap(biblia.bible[livro-1].chapters.length-1) //volta para ultimo capitulo
-      return
+      setLivro(livro-1);
+      setCap(biblia.bible[livro-1].chapters.length-1); //volta para ultimo capitulo
+      scrollViewRef.current.scrollTo({y:0.1, animated:false});
    }
    useEffect(() => {
          if(!isLoadedParams){
@@ -159,11 +151,6 @@ export default function Biblia({navigation, route}){
          }else{
             if( bibleVersion && bibleVersion != biblia.version){
                getBible();
-            }
-            if(fontStyle){
-               setFontText(fontStyle);
-            }else{
-               getFontStyle();
             }
             setBookList(
                <>
@@ -241,33 +228,12 @@ export default function Biblia({navigation, route}){
          }catch(e){console.error(e);}
       }
 
-      const getFontStyle = async () => {
-         try{
-            await AsyncStorage.getItem("@fontStyle").then((font) => {
-              if(font){  
-               setFontText(JSON.parse(font)); 
-              }else{
-                setFontText({
-                  titleBible: "Cormorant-SemiBold",
-                  versIndex: "Cormorant-SemiBold",
-                  vers:"Cormorant-Medium",
-                  name:"Cormorant"
-                });
-              }
-            })
-          }catch(e){  
-            console.error(e);
-          }
-      }
-
       const saveRecentPageView = async () => {
-         //TODO - evitar que o asyncStorage seja enfileirado ao passar rapidamente varios capitulos
-         // fazer que uma nova requisição invalide a anterior
          try {
             var jsonValue = "";
             if(livro==0 && cap == 0 && yOffset == 0){
                setYOffSet(1);
-               jsonValue = JSON.stringify({data:{livro, cap, yOffset:1}}); //resolvendo bug do storage para yOffset0
+               jsonValue = JSON.stringify({data:{livro, cap, yOffset:1}});
             }else{
                jsonValue = JSON.stringify({data:{livro, cap, yOffset}});
             }
@@ -472,7 +438,7 @@ export default function Biblia({navigation, route}){
             }
             <Text style={[styles.title,{
                      fontSize: adjust(25)*fontSize,
-                     fontFamily: fontText.titleBible,
+                     fontFamily: fontStyle.titleBible,
             },modeStyle == "dark" ? {color: '#FFF',opacity:0.86 }: {color: '#040f16'}]}>{_renderLivroCap}</Text>
             {buildVersText}
             { tempPremium > new Date().getTime() || premium ? <><Spacer/><Spacer/><Spacer/></> :

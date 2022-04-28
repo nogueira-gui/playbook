@@ -18,16 +18,19 @@ export default function AdProvider({ children }) {
       await AsyncStorage.getItem("@premium").then((premium) => {
           if(premium){
             setPremium(JSON.parse(premium));
-        } else if(hasUpgraded()) {
-            setPremium(true);
+        } else {
+          restoreUpgrade();
         }
-        });
-  }
-
-  const hasUpgraded = async () => {
-    return await MonetizationCtrl.I.hasUpgraded();
-  }
-
+      });
+    }
+    
+    const restoreUpgrade = async () => {
+      await MonetizationCtrl.I.restoreUpgrade().then(result => {
+        if(result){
+          setPremium(true);
+        }
+      });      
+    }
   const getLoadTempPremiumStorage = async () => {
     await AsyncStorage.getItem("@blockAdTemp").then((timestamp)=>{
         if(timestamp && parseInt(timestamp) > parseInt(new Date().getTime())){

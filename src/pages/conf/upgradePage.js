@@ -22,6 +22,8 @@ const UpgradePage = () => {
   React.useEffect(() => {
     return function cleanup() {
       AdMobRewarded.removeAllListeners();
+      setShowButtonTemp(false);
+      setIsUpgradeBtnLoading(false);
     };
   },[]);
 
@@ -108,7 +110,7 @@ const UpgradePage = () => {
       </Card>
       <Card>
         <Text style={{fontSize:adjust(17)}}>Por Apenas: </Text>
-        <Text style={{fontSize:adjust(50), textAlign:'center'}}>R$ 0.99 </Text>
+        <Text style={{fontSize:adjust(50), textAlign:'center'}}>R$ 1.99 </Text>
         <TouchableOpacity style={{
                         backgroundColor:"#7db32e",
                         borderRadius:30,

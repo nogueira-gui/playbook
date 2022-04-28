@@ -10,13 +10,19 @@ export default function BibleProvider({ children }) {
   const [updateCard, setUpdateCard] = useState(false);
   const [showPanel, isShowPanel] = useState(false);
   const [bibleVersion, setBibleVersion] = useState(null);
-  const [fontStyle, setFontStyle] = useState();
+  const [fontStyle, setFontStyle] = useState({
+    titleBible: "Cormorant-SemiBold",
+    versIndex: "Cormorant-SemiBold",
+    vers:"Cormorant-Medium",
+    name:"Cormorant"
+  });
   const [fontSize, setFontSize] = useState(1);
   const [verseRef, setRefVerses] = useState("");
   const [ref, setRef] = useState("");
 
   useEffect(() => {
     getFontSize();
+    getFontStyle();
     getBibleVersion();
   },[]);
 
@@ -169,6 +175,26 @@ export default function BibleProvider({ children }) {
         console.log(error);
     }
   }
+
+  const getFontStyle = async () => {
+    try{
+      await AsyncStorage.getItem("@fontStyle").then((value) => {
+        if(value){
+          setFontStyle(JSON.parse(value));
+        }else{
+          setFontStyle({
+            titleBible: "Cormorant-SemiBold",
+            versIndex: "Cormorant-SemiBold",
+            vers:"Cormorant-Medium",
+            name:"Cormorant"
+          });
+        }
+      })
+    }catch(error){
+        console.log(error);
+    }
+  }
+
   return (
     <BibleContext.Provider value={{ showPanel, isShowPanel, verseList, setList, setVerseList, 
     setCardColor, updateCard, setUpdateCard, copySelectedVerses, sharePanel, bibleVersion, setBibleVersion, 
