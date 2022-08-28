@@ -423,19 +423,6 @@ export default function Biblia({navigation, route}){
                onMomentumScrollEnd={event => setYOffSet(event.nativeEvent.contentOffset.y)}
                ref={scrollViewRef}
          >
-            {premium ? null :
-            <Pressable 
-            onPress={()=>{navigation.push("Upgrade")}}
-            style={{position:'absolute',transform: [
-                    {
-                        translateY: 70
-                    },{translateX:width-60}],
-                  }}>
-               {modeStyle == "dark" ?
-               <FontAwesome name="diamond" size={adjust(25)} color="white" /> 
-               : <FontAwesome name="diamond" size={adjust(25)} color="black" />}
-            </Pressable>
-            }
             <Text style={[styles.title,{
                      fontSize: adjust(25)*fontSize,
                      fontFamily: fontStyle.titleBible,

@@ -17,7 +17,7 @@ const appVersion = require("../../../app.json");
 const ConfigPage = ({navigation, route}) => {
   const [pressed, setPressed] = useState("");
   const [open, setOpen] = React.useState(false);
-  const { setBibleVersion, setFontStyle, fontSize, setFontSize } = useBible();
+  const { setBibleVersion, setFontStyle, setFontSize } = useBible();
   const { modeStyle, setModeStyle } = useTheme(); 
   const [dropdownValue, setDropdownValue] = React.useState(null);
   const [initialSliderValue, setInitialSliderValue] = React.useState(null);
