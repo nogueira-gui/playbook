@@ -1,8 +1,8 @@
 import React,{ useState } from 'react';
 import {View,Text,Alert,Dimensions} from 'react-native';
-import {
-    AdMobBanner
-  } from 'expo-ads-admob';
+// import {
+//     AdMobBanner
+//   } from 'expo-ads-admob';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import {Input} from 'react-native-elements';
 import service from '../../services/notes';
@@ -95,12 +95,14 @@ export default function NotasEditor({navigation, route}){
                         <Text style={{paddingTop:'12.5%',fontSize:17, fontWeight:'bold', color:'white'}}>{saveText}</Text>
                     </TouchableOpacity>
                     { tempPremium > new Date().getTime() || premium ? null :
-                    <AdMobBanner style={{alignSelf:'center', marginTop:'8%'}}
-                        bannerSize="mediumRectangle"
-                        adUnitID="ca-app-pub-8609227792865969/2991661088"
-                        servePersonalizedAds={false}// true or false
-                        onDidFailToReceiveAdWithError={(err) => console.error(err)}
-                    />}
+                    null //TODO Substituir esse linha pelo novo ADs
+                    // <AdMobBanner style={{alignSelf:'center', marginTop:'8%'}}
+                    //     bannerSize="mediumRectangle"
+                    //     adUnitID="ca-app-pub-8609227792865969/2991661088"
+                    //     servePersonalizedAds={false}// true or false
+                    //     onDidFailToReceiveAdWithError={(err) => console.error(err)}
+                    // />
+                    }
                 </ScrollView>
             </View>
         )

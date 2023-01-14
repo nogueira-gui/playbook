@@ -21,14 +21,21 @@
     },
     "android": {
       "versionCode": 8,
-      "config": {
-        "googleMobileAdsAppId": "ca-app-pub-8609227792865969~9352018558"
-      }
+      "package": "com.ninjadexter.EasyBible"
     },
     "web": {
       "favicon": "./assets/faviconBible.png"
     },
     "description": "Aplicativo desenvolvido para dar suporte ao cristão.",
-    "githubUrl": "https://github.com/ninjadexter/playbook"
+    "githubUrl": "https://github.com/ninjadexter/playbook",
+    "extra": {
+      "eas": {
+        "projectId": "934e1eb5-a6e6-4f85-aec0-6517e450849f"
+      }
+    }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-8609227792865969~9352018558",
+    "ios_app_id": "ca-app-pub-8609227792865969~9352018558"
   }
 }

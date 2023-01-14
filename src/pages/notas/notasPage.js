@@ -6,11 +6,11 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import adjust from '../../utils/fontAdjust';
 import timeConverter from '../../utils/datetimeConverter';
 import { FontAwesome5 } from '@expo/vector-icons';
-import {
-  AdMobBanner,
-  AdMobInterstitial,
-  setTestDeviceIDAsync,
-} from 'expo-ads-admob';
+// import {
+//   AdMobBanner,
+//   AdMobInterstitial,
+//   setTestDeviceIDAsync,
+// } from 'expo-ads-admob';
 import service from '../../services/notes';
 import NoteDetails from './noteDetails';
 import { useNotes } from '../../context/noteContext';
@@ -130,12 +130,13 @@ export default function NotasPage({navigation, route}){
       </View>
     }
     { tempPremium > new Date().getTime() || premium ? null :
-      <AdMobBanner style={{alignSelf:'center'}}
-        bannerSize="smartBannerPortrait"
-        adUnitID="ca-app-pub-8609227792865969/2073331085"
-        servePersonalizedAds={false}
-        onDidFailToReceiveAdWithError={(err) => console.error(err)}
-        />
+    null //remover essa linha pelo Ad depois
+      // <AdMobBanner style={{alignSelf:'center'}}
+      //   bannerSize="smartBannerPortrait"
+      //   adUnitID="ca-app-pub-8609227792865969/2073331085"
+      //   servePersonalizedAds={false}
+      //   onDidFailToReceiveAdWithError={(err) => console.error(err)}
+      //   />
     }
     </SafeAreaView>
     )

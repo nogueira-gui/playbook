@@ -1,8 +1,8 @@
 import React,{ useState, useEffect } from 'react';
 import {View,Text,Alert} from 'react-native';
-import {
-    AdMobBanner
-  } from 'expo-ads-admob';
+// import {
+//     AdMobBanner
+//   } from 'expo-ads-admob';
 import Card from '../../components/card';
 import service from '../../services/notes';
 import { useTheme } from '../../context/theme';
@@ -61,12 +61,13 @@ export default function NoteDetails(props){
                 {noteData.description}</Text>
             </Card>
             {tempPremium > new Date().getTime() || premium ? null :
-            <AdMobBanner style={{alignSelf:'center', marginTop:'30%'}}
-                        bannerSize="mediumRectangle"
-                        adUnitID="ca-app-pub-8609227792865969/3462434374"
-                        servePersonalizedAds={false}// true or false
-                        onDidFailToReceiveAdWithError={(err) => console.error(err)}
-                  />
+            null // remover pelo ad depois
+            // <AdMobBanner style={{alignSelf:'center', marginTop:'30%'}}
+            //             bannerSize="mediumRectangle"
+            //             adUnitID="ca-app-pub-8609227792865969/3462434374"
+            //             servePersonalizedAds={false}// true or false
+            //             onDidFailToReceiveAdWithError={(err) => console.error(err)}
+            //       />
             }
         </View>
     )

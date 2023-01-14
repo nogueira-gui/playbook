@@ -1,7 +1,7 @@
 import React,{useEffect} from 'react';
-import {
-   AdMobBanner
- } from 'expo-ads-admob';
+// import {
+//    AdMobBanner
+//  } from 'expo-ads-admob';
 import {Text,View,Modal,FlatList,SafeAreaView, ScrollView, Pressable, Dimensions} from 'react-native';
 import { Entypo, Feather, Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -408,12 +408,13 @@ export default function Biblia({navigation, route}){
             </View>
          </View>
          { tempPremium > new Date().getTime() || premium ? null :
-         <AdMobBanner style={{alignSelf:'center'}}
-               bannerSize="banner"
-               adUnitID="ca-app-pub-8609227792865969/8052416071"
-               servePersonalizedAds={false}// true or false
-               onDidFailToReceiveAdWithError={(err) => console.error(err)}
-                  />
+         null // remover essa linha pelo ad depois
+         // <AdMobBanner style={{alignSelf:'center'}}
+         //       bannerSize="banner"
+         //       adUnitID="ca-app-pub-8609227792865969/8052416071"
+         //       servePersonalizedAds={false}// true or false
+         //       onDidFailToReceiveAdWithError={(err) => console.error(err)}
+         //          />
          }
          </Modal>
          <ScrollView style={[styles.scrollView, modeStyle == "dark" ? {
@@ -429,12 +430,13 @@ export default function Biblia({navigation, route}){
             },modeStyle == "dark" ? {color: '#FFF',opacity:0.86 }: {color: '#040f16'}]}>{_renderLivroCap}</Text>
             {buildVersText}
             { tempPremium > new Date().getTime() || premium ? <><Spacer/><Spacer/><Spacer/></> :
-            <AdMobBanner style={{alignSelf:'center', marginBottom:70}}
-               bannerSize="banner"
-               adUnitID="ca-app-pub-8609227792865969/6154625444"
-               servePersonalizedAds={false}// true or false
-               onDidFailToReceiveAdWithError={(err) => console.error(err)}
-                  />
+            null // remover essa linha pelo ad depois
+            // <AdMobBanner style={{alignSelf:'center', marginBottom:70}}
+            //    bannerSize="banner"
+            //    adUnitID="ca-app-pub-8609227792865969/6154625444"
+            //    servePersonalizedAds={false}// true or false
+            //    onDidFailToReceiveAdWithError={(err) => console.error(err)}
+            //       />
             }
          </ScrollView>
          <View style={styles.navContainer}>

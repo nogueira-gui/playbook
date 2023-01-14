@@ -1,9 +1,9 @@
 import React from 'react';
 import { Text, Alert, TouchableOpacity, SafeAreaView } from 'react-native';
-import {
-  AdMobBanner,
-  AdMobRewarded
-} from 'expo-ads-admob';
+// import {
+//   AdMobBanner,
+//   AdMobRewarded
+// } from 'expo-ads-admob';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { FontAwesome,FontAwesome5,Entypo } from '@expo/vector-icons'; 
 import Card from '../../components/card';
@@ -21,7 +21,7 @@ const UpgradePage = () => {
 
   React.useEffect(() => {
     return function cleanup() {
-      AdMobRewarded.removeAllListeners();
+      // AdMobRewarded.removeAllListeners();
       setShowButtonTemp(false);
       setIsUpgradeBtnLoading(false);
     };
@@ -47,21 +47,20 @@ const UpgradePage = () => {
   }
 
   let loadAd = async () => {
-    await AdMobRewarded.setAdUnitID("ca-app-pub-8609227792865969/2076908933");
-    if(!showButtonTemp && tempPremium <= 0){
-      await AdMobRewarded.requestAdAsync().then(()=>{
-        setShowButtonTemp(true);
-      }).catch(()=>{setShowButtonTemp(true)});    
-    }
+    // await AdMobRewarded.setAdUnitID("ca-app-pub-8609227792865969/2076908933");
+    // if(!showButtonTemp && tempPremium <= 0){
+    //   await AdMobRewarded.requestAdAsync().then(()=>{
+    //     setShowButtonTemp(true);
+    //   }).catch(()=>{setShowButtonTemp(true)});    
+    // }
   }
   
-  AdMobRewarded.addEventListener("rewardedVideoUserDidEarnReward",(reward)=>{
-    console.log("userDidEarnReward");
-    if(reward.type == "removeAD"){
-      removeADTemp();
-    }
-    // loadAd();
-  });
+  // AdMobRewarded.addEventListener("rewardedVideoUserDidEarnReward",(reward)=>{
+  //   console.log("userDidEarnReward");
+  //   if(reward.type == "removeAD"){
+  //     removeADTemp();
+  //   }
+  // });
   
   const removeADTemp = async () => {
     let tomorrow = new Date().getTime()+(24 * 60 * 60 * 1000);
@@ -69,19 +68,19 @@ const UpgradePage = () => {
     await AsyncStorage.setItem("@blockAdTemp", tomorrow.toString());
   }
 
-  AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad",()=>{
-    console.log("didFailtoLoad");
-    if(!showButtonTemp){
-      loadAd();
-    }
-  });
+  // AdMobRewarded.addEventListener("rewardedVideoDidFailToLoad",()=>{
+  //   console.log("didFailtoLoad");
+  //   if(!showButtonTemp){
+  //     loadAd();
+  //   }
+  // });
   
-  AdMobRewarded.addEventListener("rewardedVideoDidDismiss",()=>{
-    console.log("videoDidDismiss");
-    if(!showButtonTemp){
-      loadAd();
-    }
-  });
+  // AdMobRewarded.addEventListener("rewardedVideoDidDismiss",()=>{
+  //   console.log("videoDidDismiss");
+  //   if(!showButtonTemp){
+  //     loadAd();
+  //   }
+  // });
 
   loadAd();
 
@@ -150,12 +149,12 @@ const UpgradePage = () => {
       </Card>
       {tempPremium > new Date().getTime() || premium ? null :
       <Card>
-        <AdMobBanner style={{alignSelf:'center'}}
+        {/* <AdMobBanner style={{alignSelf:'center'}}
           bannerSize="mediumRectangle"
           adUnitID="ca-app-pub-8609227792865969/8303421849"
           servePersonalizedAds={false}
           onDidFailToReceiveAdWithError={(err) => console.error(err)}
-          />
+          /> */}
       </Card>
       }
       </>
