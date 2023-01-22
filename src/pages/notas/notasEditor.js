@@ -12,6 +12,7 @@ import { useTheme } from '../../context/theme';
 import { useBible } from '../../context/bible';
 import dark from '../../style/dark';
 import { useAdControl } from '../../context/admobControl';
+import BannerAdNotasEditor from '../../components/bannerAd';
 
 export default function NotasEditor({navigation, route}){
     const { height, width } = Dimensions.get('window');
@@ -94,15 +95,7 @@ export default function NotasEditor({navigation, route}){
                     }}>
                         <Text style={{paddingTop:'12.5%',fontSize:17, fontWeight:'bold', color:'white'}}>{saveText}</Text>
                     </TouchableOpacity>
-                    { tempPremium > new Date().getTime() || premium ? null :
-                    null //TODO Substituir esse linha pelo novo ADs
-                    // <AdMobBanner style={{alignSelf:'center', marginTop:'8%'}}
-                    //     bannerSize="mediumRectangle"
-                    //     adUnitID="ca-app-pub-8609227792865969/2991661088"
-                    //     servePersonalizedAds={false}// true or false
-                    //     onDidFailToReceiveAdWithError={(err) => console.error(err)}
-                    // />
-                    }
+                    { tempPremium > new Date().getTime() || premium ? null : <BannerAdNotasEditor style={{alignSelf:'center', marginTop:'8%'}} />}
                 </ScrollView>
             </View>
         )

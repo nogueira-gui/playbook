@@ -12,6 +12,7 @@ import { useTheme } from '../../context/theme';
 import { useAdControl } from '../../context/admobControl';
 import { StatusBar } from 'expo-status-bar';
 import MonetizationCtrl from "../../services/monetization";
+import BannerAdUpgradePage from '../../components/bannerAd';
 
 const UpgradePage = () => {
   const { modeStyle } = useTheme(); 
@@ -149,12 +150,7 @@ const UpgradePage = () => {
       </Card>
       {tempPremium > new Date().getTime() || premium ? null :
       <Card>
-        {/* <AdMobBanner style={{alignSelf:'center'}}
-          bannerSize="mediumRectangle"
-          adUnitID="ca-app-pub-8609227792865969/8303421849"
-          servePersonalizedAds={false}
-          onDidFailToReceiveAdWithError={(err) => console.error(err)}
-          /> */}
+        <BannerAdUpgradePage style={{alignSelf:'center'}} />
       </Card>
       }
       </>

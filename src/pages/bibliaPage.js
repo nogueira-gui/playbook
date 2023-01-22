@@ -1,7 +1,4 @@
 import React,{useEffect} from 'react';
-// import {
-//    AdMobBanner
-//  } from 'expo-ads-admob';
 import {Text,View,Modal,FlatList,SafeAreaView, ScrollView, Pressable, Dimensions} from 'react-native';
 import { Entypo, Feather, Ionicons, FontAwesome } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -88,6 +85,8 @@ const kjv = [
 ];
 import dark from '../style/dark';
 import { useAdControl } from '../context/admobControl';
+import BannerAdBiblia1 from '../components/bannerAd';
+import BannerAdBiblia2 from '../components/bannerAd';
 export default function Biblia({navigation, route}){
    const [modalVisible, setModalVisible] = React.useState(false);
    const {width} = Dimensions.get("window");
@@ -407,14 +406,7 @@ export default function Biblia({navigation, route}){
                </Pressable>
             </View>
          </View>
-         { tempPremium > new Date().getTime() || premium ? null :
-         null // remover essa linha pelo ad depois
-         // <AdMobBanner style={{alignSelf:'center'}}
-         //       bannerSize="banner"
-         //       adUnitID="ca-app-pub-8609227792865969/8052416071"
-         //       servePersonalizedAds={false}// true or false
-         //       onDidFailToReceiveAdWithError={(err) => console.error(err)}
-         //          />
+         { tempPremium > new Date().getTime() || premium ? null : <BannerAdBiblia1 style={{alignSelf:'center'}}/>
          }
          </Modal>
          <ScrollView style={[styles.scrollView, modeStyle == "dark" ? {
@@ -430,13 +422,7 @@ export default function Biblia({navigation, route}){
             },modeStyle == "dark" ? {color: '#FFF',opacity:0.86 }: {color: '#040f16'}]}>{_renderLivroCap}</Text>
             {buildVersText}
             { tempPremium > new Date().getTime() || premium ? <><Spacer/><Spacer/><Spacer/></> :
-            null // remover essa linha pelo ad depois
-            // <AdMobBanner style={{alignSelf:'center', marginBottom:70}}
-            //    bannerSize="banner"
-            //    adUnitID="ca-app-pub-8609227792865969/6154625444"
-            //    servePersonalizedAds={false}// true or false
-            //    onDidFailToReceiveAdWithError={(err) => console.error(err)}
-            //       />
+            <BannerAdBiblia2 style={{alignSelf:'center', marginBottom:70}}/>
             }
          </ScrollView>
          <View style={styles.navContainer}>

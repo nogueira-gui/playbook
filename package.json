@@ -16,7 +16,6 @@
     "@react-navigation/stack": "^5.6.2",
     "@react-navigation/tabs": "^0.0.0-alpha.12",
     "expo": "~47.0.12",
-    "expo-app-loading": "~2.1.1",
     "expo-asset": "~8.7.0",
     "expo-clipboard": "~4.0.1",
     "expo-in-app-purchases": "~14.0.0",
@@ -45,5 +44,5 @@
   },
   "private": true,
   "name": "ePlayBook",
-  "version": "1.0.7"
+  "version": "1.0.8"
 }

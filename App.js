@@ -14,7 +14,7 @@ import NoteProvider from './src/context/noteContext';
 import AdProvider from './src/context/admobControl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import i18n from 'i18n-js';
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
@@ -100,18 +100,37 @@ i18n.locale = 'pt';
 // When a value is missing from a language it'll fallback to another language with the key present.
 i18n.fallbacks = true;
 
+SplashScreen.preventAutoHideAsync();
+
 const Tabs = createBottomTabNavigator();
 const AppStack = createStackNavigator();
 
+
 export default function App () {
+  const [appIsReady, setAppIsReady] = React.useState(false);
   const [recentPageView, setRecentPageView] = React.useState(null);
   const [fontLoaded, setFontLoaded] = React.useState(false);
   const [modeStyle, setModeStyle] = React.useState("light");
   React.useEffect(() => {
-    setAppLanguage();
-    getTheme();
-    getRecentPageView();
-    loadFonts();
+    
+    async function prepare() {
+      try {
+        // Pre-load fonts, make any API calls you need to do here
+        await loadFonts();
+        await setAppLanguage();
+        await getTheme();
+        await getRecentPageView();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        // Tell the application to render
+        setAppIsReady(true);
+        await SplashScreen.hideAsync();
+        console.log("Termino - carregamento das configurações iniciais");
+      }
+    }
+
+    prepare();
   },[]);
 
   const setAppLanguage = async () => {
@@ -120,6 +139,7 @@ export default function App () {
         i18n.locale=value;
       }
     });
+    console.log("Termino - carregando idioma do app");
   }
   
   const getTheme = async () => {
@@ -138,6 +158,7 @@ export default function App () {
         NavigationBar.setButtonStyleAsync("dark");
       }
     });
+    console.log("Termino - carregando tema");
   }
 
   const loadFonts = async () => {
@@ -158,6 +179,7 @@ export default function App () {
       'Charm-Regular': require('./assets/fonts/Charm-Regular.ttf'),
     });
     setFontLoaded(true);
+    console.log("Termino - Carregamento das fontes");
   }
   
   const getRecentPageView  = async () => {
@@ -169,16 +191,17 @@ export default function App () {
         }
         setRecentPageView(JSON.parse(value));
       });
+      console.log("Termino - recuperando ultima pagina aberta");
       } catch(e) {
       // error reading value
-      console.error(e);
+      console.error("#############Erro na recuperação da pagina###############\n", e);
       }
     };
-    
-    if(!fontLoaded){
-        return <AppLoading />;
+  
+    if (!appIsReady) {
+      return null;
     }
-    
+
     const TabScreens = () => {
       return(
     <Tabs.Navigator screenOptions={({ route }) => ({
@@ -192,7 +215,6 @@ export default function App () {
         } else if (route.name === i18n.t('settings')) {
           iconName = focused ? 'cog' : 'cog';
         }
-
         // Posso retornar qualquer componente aqui!!
         return <FontAwesome5 name={iconName} size={size} color={color} />;
       },
@@ -252,6 +274,7 @@ export default function App () {
     return(
       <AppStack.Navigator>
         <AppStack.Screen name = "Home" component ={TabScreens} 
+          // onLayout={onLayoutRootView}
           options={{ headerShown: false}}
         />
         <AppStack.Screen name = 'Note' title='Note' component = {NotasPage}/>

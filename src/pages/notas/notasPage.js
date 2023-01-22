@@ -1,5 +1,5 @@
 import React from 'react';
-import {View,Modal,Text,Alert,FlatList,Dimensions} from 'react-native';
+import {View,Modal,Text,Alert,FlatList} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Card from "../../components/card";
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -17,10 +17,10 @@ import { useNotes } from '../../context/noteContext';
 import { useTheme } from '../../context/theme';
 import { useAdControl } from '../../context/admobControl';
 import dark from '../../style/dark';
+import BannerAdNotas from '../../components/bannerAd';
 
 export default function NotasPage({navigation, route}){
   const titlePage = route.params?.notes;
-  const {width} = Dimensions.get("window");
   const emptyNotesMessage = route.params?.emptyNotesMessage;
   const removeNoteMessage = route.params?.removeNoteMessage;
   const removeNoteTitle = route.params?.removeNoteTitle;
@@ -130,13 +130,7 @@ export default function NotasPage({navigation, route}){
       </View>
     }
     { tempPremium > new Date().getTime() || premium ? null :
-    null //remover essa linha pelo Ad depois
-      // <AdMobBanner style={{alignSelf:'center'}}
-      //   bannerSize="smartBannerPortrait"
-      //   adUnitID="ca-app-pub-8609227792865969/2073331085"
-      //   servePersonalizedAds={false}
-      //   onDidFailToReceiveAdWithError={(err) => console.error(err)}
-      //   />
+      <BannerAdNotas style={{alignSelf:'center'}} />
     }
     </SafeAreaView>
     )
