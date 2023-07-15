@@ -85,8 +85,7 @@ const kjv = [
 ];
 import dark from '../style/dark';
 import { useAdControl } from '../context/admobControl';
-import BannerAdBiblia1 from '../components/bannerAd';
-import BannerAdBiblia2 from '../components/bannerAd';
+import {BannerAdBiblia1,BannerAdBiblia2} from '../components/bannerAd';
 export default function Biblia({navigation, route}){
    const [modalVisible, setModalVisible] = React.useState(false);
    const {width} = Dimensions.get("window");
@@ -422,7 +421,10 @@ export default function Biblia({navigation, route}){
             },modeStyle == "dark" ? {color: '#FFF',opacity:0.86 }: {color: '#040f16'}]}>{_renderLivroCap}</Text>
             {buildVersText}
             { tempPremium > new Date().getTime() || premium ? <><Spacer/><Spacer/><Spacer/></> :
-            <BannerAdBiblia2 style={{alignSelf:'center', marginBottom:70}}/>
+            <> 
+               <BannerAdBiblia2/>
+               <Spacer/><Spacer/><Spacer/>
+            </>
             }
          </ScrollView>
          <View style={styles.navContainer}>

@@ -12,7 +12,7 @@ import { useTheme } from '../../context/theme';
 import { useBible } from '../../context/bible';
 import dark from '../../style/dark';
 import { useAdControl } from '../../context/admobControl';
-import BannerAdNotasEditor from '../../components/bannerAd';
+import {BannerAdNotasEditor} from '../../components/bannerAd';
 
 export default function NotasEditor({navigation, route}){
     const { height, width } = Dimensions.get('window');

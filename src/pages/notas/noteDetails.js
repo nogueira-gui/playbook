@@ -6,7 +6,7 @@ import { useTheme } from '../../context/theme';
 import dark from '../../style/dark';
 import adjust from '../../utils/fontAdjust';
 import { useAdControl } from '../../context/admobControl';
-import BannerAdNotasDetalhes from '../../components/bannerAd';
+import {BannerAdNotasDetalhes} from '../../components/bannerAd';
 
 export default function NoteDetails(props){
     const noteId = props.noteIdPressed;

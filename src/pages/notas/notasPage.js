@@ -17,7 +17,7 @@ import { useNotes } from '../../context/noteContext';
 import { useTheme } from '../../context/theme';
 import { useAdControl } from '../../context/admobControl';
 import dark from '../../style/dark';
-import BannerAdNotas from '../../components/bannerAd';
+import {BannerAdNotas} from '../../components/bannerAd';
 
 export default function NotasPage({navigation, route}){
   const titlePage = route.params?.notes;
@@ -129,8 +129,8 @@ export default function NotasPage({navigation, route}){
         <Text style={[{textAlign:"center", fontSize:adjust(14), fontFamily:"MavenPro-Regular"},modeStyle=="dark" ?{color:"white", opacity:0.86}:null]}>{emptyNotesMessage}</Text>
       </View>
     }
-    { tempPremium > new Date().getTime() || premium ? null :
-      <BannerAdNotas style={{alignSelf:'center'}} />
+    { tempPremium > new Date().getTime() || premium ? null : 
+      <BannerAdNotas/> 
     }
     </SafeAreaView>
     )

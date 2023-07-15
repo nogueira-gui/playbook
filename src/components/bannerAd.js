@@ -1,6 +1,8 @@
 import React from 'react';
+import { View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
+if (__DEV__) console.log('Running in dev mode');
 const adUnitIdBiblia1 = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8609227792865969/8052416071';
 const adUnitIdBiblia2 = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8609227792865969/6154625444';
 const adUnitIdNotas = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8609227792865969/2073331085';
@@ -8,29 +10,35 @@ const adUnitIdNotasDetalhes = __DEV__ ? TestIds.BANNER : 'ca-app-pub-86092277928
 const adUnitIdNotasEditor = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8609227792865969/2991661088';
 const adUnitIdUpgradePage = __DEV__ ? TestIds.BANNER : 'ca-app-pub-8609227792865969/8303421849';
 
-export default function BannerAdBiblia1() {
+function BannerAdBiblia1() {
     return (
-        <BannerAd
-            unitId={adUnitIdBiblia1}
-            size={BannerAdSize.BANNER}
-            requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-            }}
-        />
+        <View style={{ alignSelf: 'center' }}>
+            <BannerAd
+                unitId={adUnitIdBiblia1}
+                size={BannerAdSize.BANNER}
+                requestOptions={{
+                    requestNonPersonalizedAdsOnly: true,
+                }}
+            />
+        </View>
+
     )
 }
-export default function BannerAdBiblia2() {
+function BannerAdBiblia2() {
     return (
-        <BannerAd
-            unitId={adUnitIdBiblia2}
-            size={BannerAdSize.BANNER}
-            requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-            }}
-        />
+        <View style={{ alignSelf: 'center' }}>
+            <BannerAd
+                unitId={adUnitIdBiblia2}
+                size={BannerAdSize.BANNER}
+                requestOptions={{
+                    requestNonPersonalizedAdsOnly: true,
+                }}
+            />
+        </View>
+
     )
 }
-export default function BannerAdNotas() {
+function BannerAdNotas() {
     return (
         <BannerAd
             unitId={adUnitIdNotas}
@@ -41,36 +49,43 @@ export default function BannerAdNotas() {
         />
     )
 }
-export default function BannerAdNotasDetalhes() {
+function BannerAdNotasDetalhes() {
     return (
-        <BannerAd
-            unitId={adUnitIdNotasDetalhes}
-            size={BannerAdSize.MEDIUM_RECTANGLE} 
-            requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-            }}
-        />
+        <View style={{ alignSelf: 'center' }}>
+            <BannerAd
+                unitId={adUnitIdNotasDetalhes}
+                size={BannerAdSize.MEDIUM_RECTANGLE}
+                requestOptions={{
+                    requestNonPersonalizedAdsOnly: true,
+                }}
+            />
+        </View>
     )
 }
-export default function BannerAdNotasEditor() {
+function BannerAdNotasEditor() {
     return (
-        <BannerAd
-            unitId={adUnitIdNotasEditor}
-            size={BannerAdSize.MEDIUM_RECTANGLE} 
-            requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-            }}
-        />
+        <View style={{ alignSelf: 'center' }}>
+            <BannerAd
+                unitId={adUnitIdNotasEditor}
+                size={BannerAdSize.MEDIUM_RECTANGLE}
+                requestOptions={{
+                    requestNonPersonalizedAdsOnly: true,
+                }}
+            />
+        </View>
     )
 }
-export default function BannerAdUpgradePage() {
+function BannerAdUpgradePage() {
     return (
-        <BannerAd
-            unitId={adUnitIdUpgradePage}
-            size={BannerAdSize.MEDIUM_RECTANGLE} 
-            requestOptions={{
-                requestNonPersonalizedAdsOnly: true,
-            }}
-        />
+        <View style={{alignSelf:"center"}}>
+            <BannerAd
+                unitId={adUnitIdUpgradePage}
+                size={BannerAdSize.MEDIUM_RECTANGLE}
+                requestOptions={{
+                    requestNonPersonalizedAdsOnly: true,
+                }}
+            />
+        </View>
     )
 }
+export { BannerAdBiblia1, BannerAdBiblia2, BannerAdNotas, BannerAdNotasDetalhes, BannerAdNotasEditor, BannerAdUpgradePage }
