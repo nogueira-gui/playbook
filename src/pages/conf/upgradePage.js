@@ -13,13 +13,11 @@ import RewardInterstitialAdButton from '../../components/rewardedInterstitialAdB
 
 const UpgradePage = () => {
   const { modeStyle } = useTheme();
-  const { premium, tempPremium, setTempPremium, setPremium } = useAdControl();
-  const [showButtonTemp, setShowButtonTemp] = React.useState(false);
+  const { premium, tempPremium, setPremium } = useAdControl();
   const [isUpgradeBtnLoading, setIsUpgradeBtnLoading] = React.useState(false);
 
   React.useEffect(() => {
     return function cleanup() {
-      setShowButtonTemp(false);
       setIsUpgradeBtnLoading(false);
     };
   },[]);
@@ -42,14 +40,6 @@ const UpgradePage = () => {
 
     setIsUpgradeBtnLoading(false);
   }
-
-
-  const removeADTemp = async () => {
-    let tomorrow = new Date().getTime() + (24 * 60 * 60 * 1000);
-    setTempPremium(tomorrow);
-    await AsyncStorage.setItem("@blockAdTemp", tomorrow.toString());
-  }
-
 
   return (
     <SafeAreaView style={modeStyle == "dark" ? {

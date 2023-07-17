@@ -1,6 +1,6 @@
 import React,{useEffect} from 'react';
 import {Text,View,Modal,FlatList,SafeAreaView, ScrollView, Pressable, Dimensions} from 'react-native';
-import { Entypo, Feather, Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Entypo, Feather, Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Spacer from "../components/spacer";
 import CardVersicle from '../components/cardVersicle';
@@ -243,6 +243,7 @@ export default function Biblia({navigation, route}){
 
       const scrollHandler = (id) => {
          if (dataSourceCords.length > id) {
+           setSwitchSelector("book");
            setModalVisible(false);
            scrollViewRef.current.scrollTo({
              x: 0,
@@ -331,9 +332,7 @@ export default function Biblia({navigation, route}){
          animationType="fade"
          transparent={true}
          visible={modalVisible}
-         onRequestClose={() => {
-            setModalVisible(!modalVisible);
-         }}>
+         >
          <View style={styles.centeredView}>
             <View style={styles.modalView}>
             <View>  
@@ -369,12 +368,16 @@ export default function Biblia({navigation, route}){
                            return <View style={[styles.itemGrid, styles.itemEmpty]} />;
                         }
                         return (
-                              <TouchableOpacity style={cap == parseInt(item.id)-1 ? styles.itemGridSelected : styles.itemGrid}>
-                                 <Text style={cap == parseInt(item.id)-1 ? styles.textItemGridSelected : styles.textItemGrid} 
-                                 onPress={() =>{
-                                    setCap(parseInt(item.id)-1),setVersicle(0), setSwitchSelector("versicle")
-                                 }}>{item.id}</Text>
-                              </TouchableOpacity>
+                              <Pressable style={cap == parseInt(item.id)-1 ? styles.itemGridSelected : styles.itemGrid}
+                                 onPress={()=>{
+                                    setCap(parseInt(item.id)-1),
+                                    setVersicle(0), 
+                                    setSwitchSelector("versicle")
+                                 }}>
+                                 <Text style={cap == parseInt(item.id)-1 ? styles.textItemGridSelected : styles.textItemGrid}>
+                                    {item.id}
+                                 </Text>
+                              </Pressable>
                         );
                      }}
                   /> :
@@ -388,11 +391,16 @@ export default function Biblia({navigation, route}){
                      return <View style={[styles.itemGrid, styles.itemEmpty]} />;
                      }
                      return (
-                     <TouchableOpacity style={versicle == parseInt(item.id)-1 ? styles.itemGridSelected : styles.itemGrid}>
-                        <Text style={versicle == parseInt(item.id)-1 ? styles.textItemGridSelected : styles.textItemGrid}
-                        onPress={()=>{setVersicle(parseInt(item.id)-1),scrollHandler(parseInt(item.id)-1),setSwitchSelector("book")}}
-                        >{item.id}</Text>
-                     </TouchableOpacity>
+                     <Pressable style={versicle == parseInt(item.id)-1 ? styles.itemGridSelected : styles.itemGrid}
+                        onPress={()=>{
+                           setVersicle(parseInt(item.id)-1),
+                           scrollHandler(parseInt(item.id)-1)
+                        }}
+                        >
+                        <Text style={versicle == parseInt(item.id)-1 ? styles.textItemGridSelected : styles.textItemGrid}>
+                           {item.id}
+                        </Text>
+                     </Pressable>
                      );
                   }}
                />}
@@ -400,12 +408,15 @@ export default function Biblia({navigation, route}){
             </View>
                <Pressable
                style={[styles.buttonModal, styles.buttonClose]}
-               onPress={() => {setModalVisible(!modalVisible), setSwitchSelector("book")}}>
+               onPress={() => {
+                  setModalVisible(false), 
+                  setSwitchSelector("book")}}
+               >
                <Text style={styles.textStyle}>{closeButton}</Text>
                </Pressable>
             </View>
          </View>
-         { tempPremium > new Date().getTime() || premium ? null : <BannerAdBiblia1 style={{alignSelf:'center'}}/>
+         { tempPremium > new Date().getTime() || premium ? null : <BannerAdBiblia1/>
          }
          </Modal>
          <ScrollView style={[styles.scrollView, modeStyle == "dark" ? {
@@ -444,7 +455,8 @@ export default function Biblia({navigation, route}){
             </TouchableOpacity> 
             }
             <TouchableOpacity activeOpacity={0.9} style={styles.buttonBookNav} 
-            onPress={() => {setModalVisible(true)}}>
+            onPress={() => {
+               setModalVisible(true)}}>
                <Text style={{color:"#FFF" ,fontSize:adjust(22),fontFamily:'MavenPro-Medium'}}>
                   {biblia.bible[livro].name +" "+(cap+1)}
                </Text>
