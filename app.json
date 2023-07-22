@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bíblia Fácil de Usar",
     "slug": "EasyBible",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "orientation": "portrait",
     "icon": "./assets/iconBibleBr.png",
     "splash": {
@@ -20,7 +20,7 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 14,
+      "versionCode": 15,
       "package": "com.simpleBooks.bibliaFacilDeUsar"
     },
     "web": {

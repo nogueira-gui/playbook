@@ -15,7 +15,7 @@ function BannerAdBiblia1() {
         <View style={{ alignSelf: 'center' }}>
             <BannerAd
                 unitId={adUnitIdBiblia1}
-                size={BannerAdSize.BANNER}
+                size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
                 requestOptions={{
                     requestNonPersonalizedAdsOnly: true,
                 }}
@@ -29,7 +29,7 @@ function BannerAdBiblia2() {
         <View style={{ alignSelf: 'center' }}>
             <BannerAd
                 unitId={adUnitIdBiblia2}
-                size={BannerAdSize.BANNER}
+                size={BannerAdSize.INLINE_ADAPTIVE_BANNER}
                 requestOptions={{
                     requestNonPersonalizedAdsOnly: true,
                 }}
